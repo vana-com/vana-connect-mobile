@@ -1,0 +1,40 @@
+{
+  "name": "vana-connect",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3084",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.50.0",
+    "@types/d3-force": "^3.0.10",
+    "@use-gesture/react": "^10.3.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "d3-force": "^3.0.0",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.562.0",
+    "next": "^15.3.3",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.3.1",
+    "tw-animate-css": "^1.3.6",
+    "vaul": "^1.1.2",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5"
+  }
+}

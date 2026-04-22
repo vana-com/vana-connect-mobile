@@ -1,0 +1,157 @@
+export type ConnectionState = "none" | "lite" | "deep";
+
+export interface DataSource {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  liteDescription: string;
+  liteScopes: string[];
+  deepDescription?: string;
+  deepScopes?: string[];
+  supportsDeep: boolean;
+  lastSynced?: string;
+  /** Source string(s) used in node-items.ts to match memories */
+  sourceNames?: string[];
+}
+
+export const DATA_SOURCES: DataSource[] = [
+  {
+    id: "spotify",
+    name: "Spotify",
+    emoji: "🎵",
+    description: "Your listening history and music taste",
+    liteDescription: "Listening history, top artists, and playlists from the last 12 months",
+    liteScopes: ["Top tracks and artists", "Recently played", "Playlist titles"],
+    supportsDeep: false,
+    lastSynced: "2 hours ago",
+    sourceNames: ["Spotify"],
+  },
+  {
+    id: "gmail",
+    name: "Gmail",
+    emoji: "📧",
+    description: "Email patterns and communication context",
+    liteDescription: "Recent email metadata and sender patterns from the last 30 days",
+    liteScopes: ["Sender list", "Subject lines", "Email frequency patterns"],
+    deepDescription: "Full email body analysis for richer context. Requires the desktop connector.",
+    deepScopes: ["Full email content", "Attachments metadata", "12 months of history"],
+    supportsDeep: true,
+    lastSynced: "14 minutes ago",
+    sourceNames: ["Gmail"],
+  },
+  {
+    id: "linkedin",
+    name: "LinkedIn",
+    emoji: "💼",
+    description: "Professional network and career history",
+    liteDescription: "Your profile, connections count, and recent activity",
+    liteScopes: ["Profile summary", "Connection count", "Recent posts"],
+    supportsDeep: false,
+    lastSynced: "1 day ago",
+    sourceNames: ["LinkedIn"],
+  },
+  {
+    id: "instagram",
+    name: "Instagram",
+    emoji: "📸",
+    description: "Visual aesthetic and social activity",
+    liteDescription: "Post count and public engagement patterns",
+    liteScopes: ["Post count", "Public engagement rate", "Posting frequency"],
+    deepDescription: "Full post and story archive for aesthetic analysis. Requires the desktop connector.",
+    deepScopes: ["All posts and captions", "Stories archive", "Saved posts"],
+    supportsDeep: true,
+    lastSynced: "3 hours ago",
+    sourceNames: ["iPhone Photos"],
+  },
+  {
+    id: "strava",
+    name: "Strava",
+    emoji: "🏃",
+    description: "Fitness activity and training patterns",
+    liteDescription: "Recent activities and performance trends",
+    liteScopes: ["Activity list", "Distance and pace", "Weekly mileage"],
+    deepDescription: "Complete activity history with GPS traces. Requires the desktop connector.",
+    deepScopes: ["Full GPS routes", "Heart rate data", "2 years of activities"],
+    supportsDeep: true,
+    lastSynced: "45 minutes ago",
+    sourceNames: ["Strava"],
+  },
+  {
+    id: "notion",
+    name: "Notion",
+    emoji: "📝",
+    description: "Notes, docs, and knowledge base",
+    liteDescription: "Page titles and database structure from your workspace",
+    liteScopes: ["Page titles", "Database names", "Last edited timestamps"],
+    supportsDeep: false,
+    lastSynced: "6 minutes ago",
+    sourceNames: ["Notion", "iPhone Notes"],
+  },
+  {
+    id: "x",
+    name: "X",
+    emoji: "✕",
+    description: "Posts, interests, and public conversations",
+    liteDescription: "Your post history and engagement patterns",
+    liteScopes: ["Post history", "Engagement metrics", "Following list topics"],
+    supportsDeep: false,
+    lastSynced: "5 hours ago",
+    sourceNames: ["X / Twitter"],
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    emoji: "🐙",
+    description: "Code projects and development activity",
+    liteDescription: "Public repos and commit activity",
+    liteScopes: ["Public repositories", "Commit frequency", "Languages used"],
+    supportsDeep: false,
+    lastSynced: "1 hour ago",
+    sourceNames: ["GitHub"],
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    emoji: "▶",
+    description: "Watch history and content interests",
+    liteDescription: "Watch history and channel subscriptions",
+    liteScopes: ["Watch history titles", "Channel subscriptions", "Watch time by category"],
+    supportsDeep: false,
+    lastSynced: "30 minutes ago",
+    sourceNames: ["YouTube"],
+  },
+  {
+    id: "kindle",
+    name: "Kindle",
+    emoji: "📚",
+    description: "Books, highlights, and reading habits",
+    liteDescription: "Book list and reading frequency",
+    liteScopes: ["Books read", "Reading frequency", "Highlight count per book"],
+    supportsDeep: false,
+    lastSynced: "2 days ago",
+    sourceNames: ["Kindle"],
+  },
+  {
+    id: "substack",
+    name: "Substack",
+    emoji: "📰",
+    description: "Newsletters and long-form reading",
+    liteDescription: "Subscriptions and reading activity",
+    liteScopes: ["Subscription list", "Open rate", "Read time per newsletter"],
+    supportsDeep: false,
+    lastSynced: "8 hours ago",
+    sourceNames: ["Substack"],
+  },
+  {
+    id: "apple-health",
+    name: "Apple Health",
+    emoji: "❤",
+    description: "Sleep, movement, and biometric trends",
+    liteDescription: "Step count, sleep duration, and heart rate averages",
+    liteScopes: ["Daily step count", "Sleep duration", "Resting heart rate"],
+    supportsDeep: false,
+    lastSynced: "22 minutes ago",
+    sourceNames: ["Apple Health"],
+  },
+];
