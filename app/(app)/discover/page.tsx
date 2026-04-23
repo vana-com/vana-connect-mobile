@@ -13,7 +13,6 @@ const CATEGORIES: { id: AppCategory | "all"; label: string }[] = [
   { id: "productivity",   label: "TOOLS" },
   { id: "entertainment",  label: "FUN" },
   { id: "tools",          label: "SERIOUS" },
-  { id: "earn",           label: "EARN" },
 ];
 
 export default function DiscoverPage() {

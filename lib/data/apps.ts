@@ -186,26 +186,12 @@ export const APPS: DiscoverApp[] = [
     ],
   },
   {
-    id: "taste-panel",
-    name: "Taste Panel",
-    description: "Contribute your listening and shopping data to consumer insights research. Earn store credits.",
-    emoji: "🛍",
-    publisher: "Aperture Research",
-    category: "earn",
-    featured: false,
-    verified: true,
-    scopes: [
-      { name: "Spotify listening history", description: "Tracks, artists, and genres from the last 12 months" },
-      { name: "Shopify order history", description: "Purchase categories and frequency from the last 12 months" },
-    ],
-  },
-  {
     id: "blueprint-research",
     name: "Blueprint Research",
-    description: "Contribute your health data to longevity science. Earn a free DEXA body composition scan.",
+    description: "See how your health data stacks up against others. Where do you rank for life expectancy?",
     emoji: "🧬",
     publisher: "Blueprint",
-    category: "earn",
+    category: "tools",
     featured: false,
     verified: true,
     scopes: [
