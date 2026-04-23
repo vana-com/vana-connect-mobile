@@ -13,6 +13,7 @@ const CATEGORIES: { id: AppCategory | "all"; label: string }[] = [
   { id: "productivity",   label: "TOOLS" },
   { id: "entertainment",  label: "FUN" },
   { id: "tools",          label: "SERIOUS" },
+  { id: "earn",           label: "EARN" },
 ];
 
 export default function DiscoverPage() {
@@ -106,7 +107,9 @@ export default function DiscoverPage() {
                 ALL APPS
               </p>
             )}
+
             <div className="space-y-3">
+
               {rest.map((app, i) => (
                 <AppCard key={app.id} app={app} lotNumber={featured.length + i + 1} onTap={openApp} />
               ))}

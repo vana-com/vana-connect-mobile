@@ -1,5 +1,6 @@
 "use client";
 
+import { Settings } from "lucide-react";
 import { useSettingsStore } from "@/hooks/use-settings-store";
 import { cn } from "@/lib/utils";
 
@@ -7,20 +8,6 @@ interface ScreenHeaderProps {
   title: string;
   eyebrow?: string;
   className?: string;
-}
-
-function SettingsIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M10 2v2M10 16v2M2 10h2M16 10h2M4.1 4.1l1.4 1.4M14.5 14.5l1.4 1.4M4.1 15.9l1.4-1.4M14.5 5.5l1.4-1.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="square"
-      />
-    </svg>
-  );
 }
 
 export function ScreenHeader({ title, eyebrow, className }: ScreenHeaderProps) {
@@ -50,7 +37,7 @@ export function ScreenHeader({ title, eyebrow, className }: ScreenHeaderProps) {
         className="flex size-[40px] items-center justify-center border-[2px] border-foreground shadow-hard-xs text-foreground transition-[transform,box-shadow] duration-[80ms] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
         aria-label="Open settings"
       >
-        <SettingsIcon />
+        <Settings size={18} strokeWidth={2} aria-hidden="true" />
       </button>
     </header>
   );

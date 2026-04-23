@@ -1,4 +1,4 @@
-export type AppCategory = "agents" | "productivity" | "entertainment" | "tools";
+export type AppCategory = "agents" | "productivity" | "entertainment" | "tools" | "earn";
 
 export interface AppScope {
   name: string;
@@ -183,6 +183,20 @@ export const APPS: DiscoverApp[] = [
     scopes: [
       { name: "X post history", description: "Posts and engagement metrics from the last 6 months" },
       { name: "X following list", description: "Topics and accounts you follow" },
+    ],
+  },
+  {
+    id: "longevity-research",
+    name: "Taste Panel",
+    description: "Contribute your listening and shopping data to consumer research. Earn a free DEXA scan.",
+    emoji: "🧬",
+    publisher: "Ora Biomedical",
+    category: "earn",
+    featured: false,
+    verified: true,
+    scopes: [
+      { name: "Spotify listening history", description: "Tracks, artists, and genres from the last 12 months" },
+      { name: "Shopify order history", description: "Purchase categories and frequency from the last 12 months" },
     ],
   },
 ];
