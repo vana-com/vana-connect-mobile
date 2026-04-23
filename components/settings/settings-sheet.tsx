@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useSettingsStore } from "@/hooks/use-settings-store";
-import { useDemoStore } from "@/hooks/use-demo-store";
+import { useDemoStore, type PermissionLog } from "@/hooks/use-demo-store";
 import { deriveWalletAddress } from "@/lib/wallet";
 import { cn } from "@/lib/utils";
 
@@ -31,9 +31,31 @@ function ComingSoonRow({ label }: { label: string }) {
   );
 }
 
+function AccessHistoryEntry({ log }: { log: PermissionLog }) {
+  const approved = log.outcome === "approve";
+  return (
+    <div className="px-4 py-3 border-b border-border last:border-0">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-small font-medium">{log.app_name}</span>
+        <span className={cn(
+          "text-fine font-semibold px-2 py-0.5 rounded-pill",
+          approved ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+        )}>
+          {approved ? "Approved" : "Denied"}
+        </span>
+      </div>
+      <p className="text-fine text-muted-foreground truncate">{log.scopes.join(", ")} · {log.duration}</p>
+      <p className="text-fine text-muted-foreground/60 mt-0.5">
+        {new Date(log.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+      </p>
+    </div>
+  );
+}
+
 export function SettingsSheet({ user }: SettingsSheetProps) {
   const { isOpen, close } = useSettingsStore();
   const clearDemo = useDemoStore((s) => s.clear);
+  const logs = useDemoStore((s) => s.logs);
   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
@@ -105,6 +127,22 @@ export function SettingsSheet({ user }: SettingsSheetProps) {
               <ComingSoonRow label="Device sync" />
               <ComingSoonRow label="Export my data" />
               <ComingSoonRow label="Account recovery" />
+            </div>
+          </section>
+
+          {/* Access History */}
+          <section>
+            <p className="text-fine font-semibold uppercase tracking-[0.05em] text-muted-foreground mb-3">
+              Access History
+            </p>
+            <div className="rounded-squish border border-border overflow-hidden">
+              {logs.length === 0 ? (
+                <p className="px-4 py-3 text-small text-muted-foreground">
+                  No access decisions yet.
+                </p>
+              ) : (
+                logs.map((log) => <AccessHistoryEntry key={log.id} log={log} />)
+              )}
             </div>
           </section>
 
