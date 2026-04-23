@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, LogOut, X } from "lucide-react";
+import { ChevronDown, Copy, LogOut, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -75,6 +75,7 @@ export function SettingsSheet({ user }: SettingsSheetProps) {
   const connectionEvents = useDemoStore((s) => s.connectionEvents);
   const router = useRouter();
   const [copied, setCopied] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const walletAddress = user ? deriveWalletAddress(user.id) : null;
   const displayEmail = user?.email ?? user?.phone ?? "";
@@ -144,7 +145,7 @@ export function SettingsSheet({ user }: SettingsSheetProps) {
             </div>
           </section>
 
-          {/* Coming soon sections */}
+          {/* More */}
           <section>
             <p className="text-fine font-semibold uppercase tracking-[0.05em] text-muted-foreground mb-3">
               More
@@ -154,26 +155,28 @@ export function SettingsSheet({ user }: SettingsSheetProps) {
               <ComingSoonRow label="Device sync" />
               <ComingSoonRow label="Export my data" />
               <ComingSoonRow label="Account recovery" />
-            </div>
-          </section>
-
-          {/* Access History */}
-          <section>
-            <p className="text-fine font-semibold uppercase tracking-[0.05em] text-muted-foreground mb-3">
-              Access History
-            </p>
-            <div className="rounded-squish border border-border overflow-hidden">
-              {historyItems.length === 0 ? (
-                <p className="px-4 py-3 text-small text-muted-foreground">
-                  No activity yet.
-                </p>
-              ) : (
-                historyItems.map((item) =>
-                  item.type === "permission"
-                    ? <PermissionEntry key={item.log.id} log={item.log} />
-                    : <ConnectionEntry key={item.event.id} event={item.event} />
-                )
-              )}
+              <div className="border-t border-border -mx-4">
+                <button
+                  onClick={() => setHistoryOpen((o) => !o)}
+                  className="flex w-full items-center justify-between px-4 py-3 hover:bg-muted transition-colors"
+                >
+                  <span className="text-button">Access History</span>
+                  <ChevronDown size={15} className={cn("text-muted-foreground transition-transform duration-200", historyOpen && "rotate-180")} />
+                </button>
+                {historyOpen && (
+                  <div className="border-t border-border">
+                    {historyItems.length === 0 ? (
+                      <p className="px-4 py-3 text-small text-muted-foreground">No activity yet.</p>
+                    ) : (
+                      historyItems.map((item) =>
+                        item.type === "permission"
+                          ? <PermissionEntry key={item.log.id} log={item.log} />
+                          : <ConnectionEntry key={item.event.id} event={item.event} />
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 
