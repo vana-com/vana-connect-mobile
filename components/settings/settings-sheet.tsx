@@ -2,11 +2,11 @@
 
 import { Copy, LogOut, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useSettingsStore } from "@/hooks/use-settings-store";
-import { useDemoStore, type PermissionLog } from "@/hooks/use-demo-store";
+import { useDemoStore, type PermissionLog, type ConnectionEvent } from "@/hooks/use-demo-store";
 import { deriveWalletAddress } from "@/lib/wallet";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,13 @@ function ComingSoonRow({ label }: { label: string }) {
   );
 }
 
-function AccessHistoryEntry({ log }: { log: PermissionLog }) {
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
+
+function PermissionEntry({ log }: { log: PermissionLog }) {
   const approved = log.outcome === "approve";
   return (
     <div className="px-4 py-3 border-b border-border last:border-0">
@@ -45,9 +51,19 @@ function AccessHistoryEntry({ log }: { log: PermissionLog }) {
         </span>
       </div>
       <p className="text-fine text-muted-foreground truncate">{log.scopes.join(", ")} · {log.duration}</p>
-      <p className="text-fine text-muted-foreground/60 mt-0.5">
-        {new Date(log.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-      </p>
+      <p className="text-fine text-muted-foreground/60 mt-0.5">{formatDate(log.created_at)}</p>
+    </div>
+  );
+}
+
+function ConnectionEntry({ event }: { event: ConnectionEvent }) {
+  const label = `${event.access_level === "deep" ? "Deep" : "Lite"} ${event.source_name} data ${event.action} from ${event.via}`;
+  return (
+    <div className="px-4 py-3 border-b border-border last:border-0">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-small font-medium">{label}</span>
+      </div>
+      <p className="text-fine text-muted-foreground/60">{formatDate(event.created_at)}</p>
     </div>
   );
 }
@@ -56,11 +72,22 @@ export function SettingsSheet({ user }: SettingsSheetProps) {
   const { isOpen, close } = useSettingsStore();
   const clearDemo = useDemoStore((s) => s.clear);
   const logs = useDemoStore((s) => s.logs);
+  const connectionEvents = useDemoStore((s) => s.connectionEvents);
   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
   const walletAddress = user ? deriveWalletAddress(user.id) : null;
   const displayEmail = user?.email ?? user?.phone ?? "";
+
+  type AnyEvent = { created_at: string; type: "permission"; log: PermissionLog } | { created_at: string; type: "connection"; event: ConnectionEvent };
+
+  const historyItems = useMemo<AnyEvent[]>(() => {
+    const items: AnyEvent[] = [
+      ...logs.map((log) => ({ created_at: log.created_at, type: "permission" as const, log })),
+      ...connectionEvents.map((event) => ({ created_at: event.created_at, type: "connection" as const, event })),
+    ];
+    return items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [logs, connectionEvents]);
 
   function handleLogout() {
     clearDemo();
@@ -136,12 +163,16 @@ export function SettingsSheet({ user }: SettingsSheetProps) {
               Access History
             </p>
             <div className="rounded-squish border border-border overflow-hidden">
-              {logs.length === 0 ? (
+              {historyItems.length === 0 ? (
                 <p className="px-4 py-3 text-small text-muted-foreground">
-                  No access decisions yet.
+                  No activity yet.
                 </p>
               ) : (
-                logs.map((log) => <AccessHistoryEntry key={log.id} log={log} />)
+                historyItems.map((item) =>
+                  item.type === "permission"
+                    ? <PermissionEntry key={item.log.id} log={item.log} />
+                    : <ConnectionEntry key={item.event.id} event={item.event} />
+                )
               )}
             </div>
           </section>
