@@ -14,6 +14,8 @@
 - [ ] 2.4 Replace demo auth with a mobile auth adapter that consumes Vana session credentials and exposes `walletAddress` as the canonical subject.
 - [ ] 2.5 Add provider-independence tests or fixtures proving downstream code does not key accounts, grants, or API authorization by Oko-specific ids.
 - [ ] 2.6 Document the migration boundary for Para, Oko, and any future provider, including the no-email-auto-merge rule.
+- [x] 2.7 Capture source-level and cryptographic evidence that Oko can export a secp256k1 key controlling the same EVM address.
+- [ ] 2.8 Validate the full Oko key export UX in the target mobile/browser environment before making self-custody or provider migration a launch claim.
 
 ## 3. DP RPC Contracts
 

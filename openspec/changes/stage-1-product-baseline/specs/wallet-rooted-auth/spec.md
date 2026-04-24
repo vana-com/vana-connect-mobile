@@ -42,6 +42,13 @@ Before Oko is treated as the implementation choice, the team MUST verify that Ok
 - **WHEN** Oko requires an interactive wallet confirmation for the required refresh/signing path
 - **THEN** the auth implementation does not claim Stage 1 readiness without a documented fallback or revised auth design
 
+### Requirement: Self-custody and provider-detach verification
+If the product exposes self-custody, raw key export, or provider migration, the implementation SHALL verify that the exported or imported key controls the same wallet address before representing account continuity.
+
+#### Scenario: Exported key is used for wallet-address continuity
+- **WHEN** a user exports or imports wallet material as part of self-custody or provider migration
+- **THEN** the system verifies a signature or equivalent wallet proof from the resulting key against the expected wallet address
+
 ### Requirement: Account migration boundary
 The product SHALL NOT auto-merge or canonicalize accounts by email, phone, provider user id, `privyDid`, `paraDid`, or Oko user id.
 

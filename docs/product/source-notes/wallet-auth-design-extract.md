@@ -23,6 +23,7 @@ Oko is the preferred first embedded wallet provider implementation, but the stab
 - Provider tokens should be inputs to a Vana token exchange only.
 - Mobile refresh requires silent signing of `"vana-master-key-v1:" + nonce`.
 - Before Oko is adopted, Oko must prove silent arbitrary EIP-191 signing works without a wallet-confirmation prompt in the mobile/browser session context.
+- Oko raw key export has source-level validation plus a local cryptographic reproduction in `docs/product/source-notes/oko-self-custody-validation.md`; this supports self-custody and provider-detach planning, but does not replace a live mobile export test.
 - Cross-surface continuity must be wallet-address based across mobile, DataConnect, Context Gateway, and future surfaces.
 - Email, phone, `privyDid`, `paraDid`, and Oko user IDs must not become canonical account identity.
 
@@ -88,6 +89,7 @@ If autonomous/background signing is required under Oko, that is a separate sessi
 ## Open Items For Auth PR
 
 - Confirm Oko supports the required silent signing behavior in the target client environment.
+- Validate the full Oko export UX in the target mobile/browser environment if self-custody or provider migration is part of the launch claim.
 - Decide whether Stage 1 requires Apple OAuth or can start with email/phone and Google.
 - Decide whether the Vana auth issuer is implemented as an extension of `account.vana.org` in `vana-com/vana-connect`, and what repo/deployment changes are required.
 - Decide whether the first mobile auth PR uses a local mock issuer or waits for real issuer infrastructure.

@@ -76,6 +76,7 @@ Alternative considered: ignore onchain compatibility until later. That risks vio
 ## Risks / Trade-offs
 
 - Oko may not support silent arbitrary EIP-191 signing in the required mobile/browser session context. Mitigation: make this a pre-adoption task and keep the Vana session contract provider-agnostic.
+- Oko key export is source-verified for the secp256k1 / EVM path, but full production UX is not verified. Mitigation: keep export/self-custody as a validated design assumption, not a launch claim, until mobile and managed-service behavior are tested.
 - The Vana auth issuer does not live in this repo. Mitigation: specify the contract here and track implementation against the existing `account.vana.org` surface in `vana-com/vana-connect`.
 - DP RPC may have gaps for the required metadata, grants, consent, and audit records. Mitigation: require a gap inventory before implementation claims Stage 1 readiness.
 - Cross-surface storage is not yet designed. Mitigation: define the product invariant first and make the storage topology a separate design task.

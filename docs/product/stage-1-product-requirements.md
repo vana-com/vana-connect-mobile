@@ -74,6 +74,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - Hosted product sessions should use a Vana-controlled identity credential, not a vendor-scoped identifier as the canonical subject.
 - The existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` should be treated as the first candidate home for the Vana identity issuer.
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
+- Oko raw key export is source-verified and locally reproduced for the secp256k1 / EVM path; the remaining launch question is the full mobile export UX and production support contract.
 - The implementation must avoid baking provider-specific IDs into protocol or product identity.
 - Legacy Para Vana App migration is not part of the first staging target unless leadership reverses that scope decision.
 
@@ -116,6 +117,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - The product must show a user-visible history of connection and permission decisions.
 - Account/settings must expose the user's stable identity in a non-crypto-forward way, with wallet details available for advanced/debug contexts.
 - Future export, recovery, and provider migration affordances should be left possible, even if not implemented in Stage 1.
+- If self-custody, export, or provider migration is exposed, the product must verify that the exported or imported wallet controls the same wallet address before representing continuity to the user.
 
 ## Protocol and Infrastructure Requirements
 
