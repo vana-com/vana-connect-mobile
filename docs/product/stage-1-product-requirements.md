@@ -72,6 +72,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - The product must link auth to a wallet address.
 - The wallet address must be the stable identity root consumed by downstream protocol surfaces.
 - Hosted product sessions should use a Vana-controlled identity credential, not a vendor-scoped identifier as the canonical subject.
+- Routine session refresh should use Vana-owned credentials and must not depend on Oko silently signing arbitrary EIP-191 messages.
 - The existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` should be treated as the first candidate home for the Vana identity issuer.
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
 - Oko raw key export is source-verified and locally reproduced for the secp256k1 / EVM path; the remaining launch question is the full mobile export UX and production support contract.
@@ -118,6 +119,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - Account/settings must expose the user's stable identity in a non-crypto-forward way, with wallet details available for advanced/debug contexts.
 - Future export, recovery, and provider migration affordances should be left possible, even if not implemented in Stage 1.
 - If self-custody, export, or provider migration is exposed, the product must verify that the exported or imported wallet controls the same wallet address before representing continuity to the user.
+- Delegate consent may be explicit during onboarding or deferred until a high-intent action, but the product must not represent a server or Personal Server delegate as wallet-authorized until a wallet-rooted authorization event exists.
 
 ## Protocol and Infrastructure Requirements
 
@@ -185,6 +187,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 6. Is the Vana identity issuer a JWT-only extension of `account.vana.org` or an OIDC-compatible account-domain provider?
 7. Which Stage 1 subset can honestly land in 4 weeks, and what is the full Stage 1 estimate?
 8. Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path to the protocol participant model?
+9. Does the first implementation ask for delegate consent during onboarding, or defer it until DataConnect handoff, first app grant, auto-sync, export/recovery, or monetization?
 
 ## Branch Policy
 

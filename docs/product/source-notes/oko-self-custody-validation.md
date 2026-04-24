@@ -67,7 +67,7 @@ The script also requires Python `eth-account` for EVM signing/recovery.
 
 Oko is viable enough for the current self-custody/export assumption to remain in the Stage 1 auth plan. The provider-agnostic identity boundary is still required: downstream identity and authorization should remain wallet-address and Vana-session based, not Oko-user-id based.
 
-This proof does not close the separate Oko silent-signing gate. We still need to verify that the target mobile/browser session can silently sign the agreed `vana-master-key-v1:<nonce>` payload without an unacceptable user prompt.
+This proof does not provide silent wallet signing. The separate silent-signing validation found that Oko arbitrary EIP-191 signing is user-visible as shipped, so routine session refresh should use Vana-owned credentials rather than assuming silent Oko `personal_sign`.
 
 ## Still Unverified
 

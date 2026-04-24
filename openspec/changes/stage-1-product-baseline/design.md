@@ -37,6 +37,8 @@ The stable account subject is the wallet address. Hosted product sessions should
 
 Oko is the preferred first embedded-wallet implementation because the current strategy favors invisible wallet creation and familiar login. The product contract must remain provider-agnostic: provider tokens are inputs to Vana token exchange, not downstream service credentials.
 
+Oko should not be assumed to support silent arbitrary EIP-191 signing. Source validation shows Oko `personal_sign` is user-visible as shipped: web goes through an attached approval modal, and React Native routes signing through OS-browser `open_modal`. Routine product sessions therefore need to be Vana-owned credentials, not repeated silent wallet signatures.
+
 `account.vana.org` / `account-dev.vana.org` already exists in `vana-com/vana-connect` as the account surface for DataConnect handoff. Stage 1 should evaluate extending that account-domain surface for the Vana issuer.
 
 Alternative considered: use provider identity directly. That is simpler initially but makes cross-surface migration and provider replacement harder.
@@ -52,6 +54,8 @@ Alternative considered: make the mobile app itself the participant. That may be 
 ### Users grant permissions; servers exercise limited authority
 
 The user is the permission authority for app data access. A Personal Server or authorized server identity may store, enforce, serve, submit, or attest permissions only inside the scope, duration, and policy the user approved. The server should not create a new app grant, expand scope, extend duration, or approve access unless the user explicitly pre-authorized that policy.
+
+The timing of delegate consent is a product decision. Stage 1 may ask for explicit delegate consent before delegated authority is needed, or defer consent until a high-intent moment. If consent is deferred, pre-consent background behavior should be modeled as Vana product/session behavior, not protocol-authorized delegation.
 
 Alternative considered: allow the Personal Server to grant permissions independently. That weakens user control and makes audit records ambiguous about whether access was user-approved or server-selected.
 
@@ -75,7 +79,7 @@ Alternative considered: ignore onchain compatibility until later. That risks vio
 
 ## Risks / Trade-offs
 
-- Oko may not support silent arbitrary EIP-191 signing in the required mobile/browser session context. Mitigation: make this a pre-adoption task and keep the Vana session contract provider-agnostic.
+- Oko does not appear to support silent arbitrary EIP-191 signing in the required mobile/browser session context as shipped. Mitigation: design routine session refresh around Vana-owned credentials, and use wallet-rooted signatures only for explicit authority events unless Oko provides a documented constrained policy-signing feature.
 - Oko key export is source-verified for the secp256k1 / EVM path, but full production UX is not verified. Mitigation: keep export/self-custody as a validated design assumption, not a launch claim, until mobile and managed-service behavior are tested.
 - The Vana auth issuer does not live in this repo. Mitigation: specify the contract here and track implementation against the existing `account.vana.org` surface in `vana-com/vana-connect`.
 - DP RPC may have gaps for the required metadata, grants, consent, and audit records. Mitigation: require a gap inventory before implementation claims Stage 1 readiness.
@@ -86,7 +90,7 @@ Alternative considered: ignore onchain compatibility until later. That risks vio
 ## Migration Plan
 
 1. Land this staging branch with OpenSpec requirements and source notes only.
-2. Branch auth work from staging and target `wallet-rooted-auth`, including the Vana JWT boundary and Oko feasibility proof.
+2. Branch auth work from staging and target `wallet-rooted-auth`, including the Vana JWT boundary, Oko feasibility evidence, and explicit/deferred delegate-consent choice.
 3. Inventory DP RPC gaps and define typed records for connections, grants, consent, query events, source metadata, and audit history.
 4. Choose the hosted storage / authorized server identity topology and document how it preserves the protocol participant model.
 5. Integrate mobile surfaces against protocol-backed data using local mocks only when the mocks match the target contracts.
@@ -103,3 +107,4 @@ Rollback for this PR is documentation-only: close or revert the staging baseline
 - Which Oko components does Vana operate, and in which repos?
 - Is the first auth issuer a JWT-only extension of `account.vana.org` or an OIDC-compatible account-domain provider?
 - Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path?
+- Does Stage 1 ask for delegate consent early, or defer it until a high-intent action?

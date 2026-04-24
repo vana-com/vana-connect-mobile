@@ -21,6 +21,13 @@ Hosted product sessions SHALL use a Vana-controlled credential, such as a Vana J
 - **WHEN** mobile calls a Vana backend, DP RPC adapter, or builder-facing API
 - **THEN** it sends a Vana session credential whose canonical subject is the wallet address, not an Oko, Para, Privy, Supabase, email, or phone identifier
 
+### Requirement: Session refresh independent of silent wallet signing
+Routine product session refresh SHALL NOT depend on Oko silently signing arbitrary EIP-191 messages.
+
+#### Scenario: Mobile refreshes a product session
+- **WHEN** a signed-in mobile user refreshes a Vana product session
+- **THEN** the implementation uses Vana-owned session semantics or a documented delegated/session-key design rather than requiring silent Oko `personal_sign`
+
 ### Requirement: Account-domain issuer candidate
 The implementation SHALL treat the existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` as the first candidate home for the Vana identity issuer.
 
@@ -35,12 +42,12 @@ The implementation SHALL keep embedded-wallet provider identifiers out of protoc
 - **WHEN** the embedded-wallet provider is replaced or a second provider is introduced
 - **THEN** downstream services continue to key user identity and permissions by wallet address and Vana-issued credentials
 
-### Requirement: Oko feasibility gate
-Before Oko is treated as the implementation choice, the team MUST verify that Oko supports the required mobile/browser signing behavior, including silent arbitrary EIP-191 signing for the agreed master-key nonce payload.
+### Requirement: Oko signing boundary
+The implementation SHALL treat Oko arbitrary EIP-191 signing as user-visible unless Oko provides a documented constrained policy-signing feature.
 
-#### Scenario: Oko cannot silently sign the required payload
-- **WHEN** Oko requires an interactive wallet confirmation for the required refresh/signing path
-- **THEN** the auth implementation does not claim Stage 1 readiness without a documented fallback or revised auth design
+#### Scenario: Oko requires approval for the required payload
+- **WHEN** Oko requires interactive confirmation for `vana-master-key-v1:<nonce>` or another arbitrary payload
+- **THEN** the auth implementation does not use that path for routine session refresh
 
 ### Requirement: Self-custody and provider-detach verification
 If the product exposes self-custody, raw key export, or provider migration, the implementation SHALL verify that the exported or imported key controls the same wallet address before representing account continuity.
@@ -48,6 +55,17 @@ If the product exposes self-custody, raw key export, or provider migration, the 
 #### Scenario: Exported key is used for wallet-address continuity
 - **WHEN** a user exports or imports wallet material as part of self-custody or provider migration
 - **THEN** the system verifies a signature or equivalent wallet proof from the resulting key against the expected wallet address
+
+### Requirement: Delegate consent timing
+The implementation MAY ask for wallet-rooted delegate consent during onboarding or defer it until a high-intent action, but it SHALL NOT represent a server or Personal Server delegate as wallet-authorized before a wallet-rooted authorization event exists.
+
+#### Scenario: Delegate consent is deferred
+- **WHEN** the user has only completed familiar login and has not approved delegate authority
+- **THEN** background product behavior is treated as Vana account/session behavior rather than protocol-authorized delegation
+
+#### Scenario: Delegate consent is collected
+- **WHEN** the user approves a Vana server, hosted Personal Server, or other delegate
+- **THEN** the authorization records delegate identity, scope, audience, expiry or revocation path, and an audit label
 
 ### Requirement: Account migration boundary
 The product SHALL NOT auto-merge or canonicalize accounts by email, phone, provider user id, `privyDid`, `paraDid`, or Oko user id.

@@ -21,8 +21,8 @@ Oko is the preferred first embedded wallet provider implementation, but the stab
 - Crypto concepts should not be default UX.
 - The mobile app should store and send Vana JWTs, not Oko, Privy, or Para tokens.
 - Provider tokens should be inputs to a Vana token exchange only.
-- Mobile refresh requires silent signing of `"vana-master-key-v1:" + nonce`.
-- Before Oko is adopted, Oko must prove silent arbitrary EIP-191 signing works without a wallet-confirmation prompt in the mobile/browser session context.
+- Routine mobile session refresh should not require Oko to silently sign `"vana-master-key-v1:" + nonce`; source validation indicates Oko arbitrary EIP-191 signing is user-visible as shipped.
+- Oko personal signing should be treated as a user-approved authority event unless Oko provides a documented constrained policy-signing feature.
 - Oko raw key export has source-level validation plus a local cryptographic reproduction in `docs/product/source-notes/oko-self-custody-validation.md`; this supports self-custody and provider-detach planning, but does not replace a live mobile export test.
 - Cross-surface continuity must be wallet-address based across mobile, DataConnect, Context Gateway, and future surfaces.
 - Email, phone, `privyDid`, `paraDid`, and Oko user IDs must not become canonical account identity.
@@ -64,6 +64,17 @@ Choosing Oko implies separate infrastructure work:
 
 If autonomous/background signing is required under Oko, that is a separate session-key project. On the current chain it likely requires ERC-4337, smart accounts, bundler, paymaster or relayer, and session-key policy logic. With EIP-7702, some account-deployment complexity changes, but infra still needs a separate design.
 
+## Session and Delegation Posture
+
+Silent product UX should be provided through Vana sessions and scoped delegation, not by assuming silent wallet signatures.
+
+Two product options remain valid:
+
+- Explicit delegate consent: ask the user for wallet-rooted authorization before a Vana server, hosted Personal Server, or other delegate acts under wallet authority.
+- Deferred delegate consent: onboard with Oko and Vana sessions first, then ask for wallet-rooted authorization at a high-intent moment such as DataConnect handoff, first app grant, enabling auto-sync, export/recovery, or monetization.
+
+If consent is deferred, the implementation should not claim protocol-authorized delegation before the wallet-rooted authorization event exists.
+
 ## Migration Boundaries
 
 - Do not combine provider migration with identity migration if avoidable.
@@ -88,7 +99,8 @@ If autonomous/background signing is required under Oko, that is a separate sessi
 
 ## Open Items For Auth PR
 
-- Confirm Oko supports the required silent signing behavior in the target client environment.
+- Design session refresh around Vana-owned credentials rather than silent Oko `personal_sign`.
+- Choose whether the first Stage 1 slice uses explicit delegate consent or deferred delegate consent.
 - Validate the full Oko export UX in the target mobile/browser environment if self-custody or provider migration is part of the launch claim.
 - Decide whether Stage 1 requires Apple OAuth or can start with email/phone and Google.
 - Decide whether the Vana auth issuer is implemented as an extension of `account.vana.org` in `vana-com/vana-connect`, and what repo/deployment changes are required.

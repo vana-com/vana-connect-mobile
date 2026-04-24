@@ -8,7 +8,7 @@
 
 ## 2. Wallet-Rooted Auth
 
-- [ ] 2.1 Verify Oko support for the required mobile/browser silent arbitrary EIP-191 signing flow using the agreed master-key nonce payload.
+- [x] 2.1 Verify whether Oko supports the required mobile/browser silent arbitrary EIP-191 signing flow using the agreed master-key nonce payload; current evidence says unsupported as shipped.
 - [ ] 2.2 Define the Vana auth issuer contract, including challenge endpoint, token exchange endpoint, JWT claims, JWKS, nonce TTL, provider audience validation, and key rotation.
 - [ ] 2.3 Evaluate implementing the Vana auth issuer as an extension of `account.vana.org` in `vana-com/vana-connect`.
 - [ ] 2.4 Replace demo auth with a mobile auth adapter that consumes Vana session credentials and exposes `walletAddress` as the canonical subject.
@@ -16,6 +16,8 @@
 - [ ] 2.6 Document the migration boundary for Para, Oko, and any future provider, including the no-email-auto-merge rule.
 - [x] 2.7 Capture source-level and cryptographic evidence that Oko can export a secp256k1 key controlling the same EVM address.
 - [ ] 2.8 Validate the full Oko key export UX in the target mobile/browser environment before making self-custody or provider migration a launch claim.
+- [ ] 2.9 Choose whether the first Stage 1 slice uses explicit delegate consent or deferred delegate consent.
+- [ ] 2.10 Define the delegated/session authority contract if background protocol actions are required without repeated wallet prompts.
 
 ## 3. DP RPC Contracts
 
