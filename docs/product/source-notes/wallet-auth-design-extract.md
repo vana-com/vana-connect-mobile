@@ -24,6 +24,8 @@ Oko is the preferred first embedded wallet provider implementation, but the stab
 - Routine mobile session refresh should not require Oko to silently sign `"vana-master-key-v1:" + nonce`; source validation indicates Oko arbitrary EIP-191 signing is user-visible as shipped.
 - Oko personal signing should be treated as a user-approved authority event unless Oko provides a documented constrained policy-signing feature.
 - Oko raw key export has source-level validation plus a local cryptographic reproduction in `docs/product/source-notes/oko-self-custody-validation.md`; this supports self-custody and provider-detach planning, but does not replace a live mobile export test.
+- Oko does not currently appear to support EIP-7702 authorization or smart-account wallet APIs as shipped; if 7702 is required, treat it as Oko roadmap work, Vana fork work, or a migration/export target.
+- A self-hosted Oko deployment can likely be Vana-branded because Oko is Apache-2.0 licensed, but legal/trademark review still needs to confirm attribution and mark-removal requirements.
 - Cross-surface continuity must be wallet-address based across mobile, DataConnect, Context Gateway, and future surfaces.
 - Email, phone, `privyDid`, `paraDid`, and Oko user IDs must not become canonical account identity.
 
@@ -60,6 +62,8 @@ Choosing Oko implies separate infrastructure work:
 - Oko SDK integration details for mobile/browser
 - provider-session verification story for the Vana auth service
 - key export/reimport UX
+- attached-wallet approval modal customization or Vana-branded fork strategy
+- explicit policy for whether any no-prompt signing is allowed, and under what prior consent, scope, expiry, revocation, and audit constraints
 - operational ownership for KSN nodes and provider configuration
 
 If autonomous/background signing is required under Oko, that is a separate session-key project. On the current chain it likely requires ERC-4337, smart accounts, bundler, paymaster or relayer, and session-key policy logic. With EIP-7702, some account-deployment complexity changes, but infra still needs a separate design.
@@ -102,6 +106,9 @@ If consent is deferred, the implementation should not claim protocol-authorized 
 - Design session refresh around Vana-owned credentials rather than silent Oko `personal_sign`.
 - Choose whether the first Stage 1 slice uses explicit delegate consent or deferred delegate consent.
 - Validate the full Oko export UX in the target mobile/browser environment if self-custody or provider migration is part of the launch claim.
+- Confirm Oko 7702 roadmap or decide whether Vana needs to fork/build that capability.
+- Confirm self-hosted Oko branding/legal obligations and whether Vana will modify Oko's attached approval UI.
+- If product requires no-prompt wallet-authority behavior, define it as scoped delegated/session authority rather than hidden ordinary wallet approval.
 - Decide whether Stage 1 requires Apple OAuth or can start with email/phone and Google.
 - Decide whether the Vana auth issuer is implemented as an extension of `account.vana.org` in `vana-com/vana-connect`, and what repo/deployment changes are required.
 - Decide whether the first mobile auth PR uses a local mock issuer or waits for real issuer infrastructure.

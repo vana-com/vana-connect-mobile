@@ -39,6 +39,10 @@ Oko is the preferred first embedded-wallet implementation because the current st
 
 Oko should not be assumed to support silent arbitrary EIP-191 signing. Source validation shows Oko `personal_sign` is user-visible as shipped: web goes through an attached approval modal, and React Native routes signing through OS-browser `open_modal`. Routine product sessions therefore need to be Vana-owned credentials, not repeated silent wallet signatures.
 
+Oko also should not be assumed to support EIP-7702 authorization or smart-account wallet APIs as shipped. The current source ignores EIP-7702 transaction fields and does not expose `wallet_sendCalls`, `wallet_getCapabilities`, or wallet permission APIs. If Stage 1 needs 7702, that is Oko roadmap work, Vana fork work, or a migration/export-import path to a 7702-capable wallet.
+
+Because Vana expects to self-host Oko, Vana can likely modify the attached wallet UI and operate a Vana-branded deployment under Apache-2.0 license terms. That does not remove the need for legal/trademark review or for a product/security decision on no-prompt signing. Any auto-approval or hidden approval path should be modeled as scoped delegated/session authority with prior consent, not as ordinary user approval.
+
 `account.vana.org` / `account-dev.vana.org` already exists in `vana-com/vana-connect` as the account surface for DataConnect handoff. Stage 1 should evaluate extending that account-domain surface for the Vana issuer.
 
 Alternative considered: use provider identity directly. That is simpler initially but makes cross-surface migration and provider replacement harder.
@@ -80,6 +84,8 @@ Alternative considered: ignore onchain compatibility until later. That risks vio
 ## Risks / Trade-offs
 
 - Oko does not appear to support silent arbitrary EIP-191 signing in the required mobile/browser session context as shipped. Mitigation: design routine session refresh around Vana-owned credentials, and use wallet-rooted signatures only for explicit authority events unless Oko provides a documented constrained policy-signing feature.
+- Oko does not appear to support EIP-7702 authorization or smart-account wallet APIs as shipped. Mitigation: do not make 7702 a Stage 1 dependency unless Oko commits support, Vana owns a fork/build, or the flow explicitly uses export/import into a 7702-capable wallet.
+- Self-hosting gives Vana control over Oko UI and signing-flow code, but no-prompt signing can blur the distinction between user approval and delegated authority. Mitigation: require explicit scope, audience, expiry, revocation, and audit semantics before any no-prompt wallet-authority behavior.
 - Oko key export is source-verified for the secp256k1 / EVM path, but full production UX is not verified. Mitigation: keep export/self-custody as a validated design assumption, not a launch claim, until mobile and managed-service behavior are tested.
 - The Vana auth issuer does not live in this repo. Mitigation: specify the contract here and track implementation against the existing `account.vana.org` surface in `vana-com/vana-connect`.
 - DP RPC may have gaps for the required metadata, grants, consent, and audit records. Mitigation: require a gap inventory before implementation claims Stage 1 readiness.
@@ -105,6 +111,8 @@ Rollback for this PR is documentation-only: close or revert the staging baseline
 - What hosted storage topology should Stage 1 use?
 - How does DataConnect publish local connected data for mobile and builder access?
 - Which Oko components does Vana operate, and in which repos?
+- Does Vana need Oko 7702 support in Stage 1, or can 7702 remain a later provider/migration path?
+- Does Vana modify Oko's attached wallet UI, and what prior-consent policy governs any no-prompt signing?
 - Is the first auth issuer a JWT-only extension of `account.vana.org` or an OIDC-compatible account-domain provider?
 - Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path?
 - Does Stage 1 ask for delegate consent early, or defer it until a high-intent action?

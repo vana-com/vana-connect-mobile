@@ -49,6 +49,17 @@ The implementation SHALL treat Oko arbitrary EIP-191 signing as user-visible unl
 - **WHEN** Oko requires interactive confirmation for `vana-master-key-v1:<nonce>` or another arbitrary payload
 - **THEN** the auth implementation does not use that path for routine session refresh
 
+### Requirement: Oko capability boundary
+The implementation SHALL NOT depend on Oko EIP-7702 authorization, smart-account wallet APIs, or no-prompt wallet-authority behavior unless those capabilities are explicitly supported by Oko, implemented and owned by Vana in a fork, or replaced by a documented provider migration path.
+
+#### Scenario: Stage 1 needs 7702-style delegated execution
+- **WHEN** an implementation design requires EIP-7702 authorization, `wallet_sendCalls`, wallet permissions, or equivalent smart-account behavior
+- **THEN** the design identifies whether the capability comes from Oko support, a Vana-owned Oko fork/build, or export/import into a 7702-capable wallet before relying on it
+
+#### Scenario: Self-hosted Oko removes an approval prompt
+- **WHEN** Vana modifies Oko signing UI or auto-approves a wallet-authority request
+- **THEN** the behavior is backed by prior user consent with explicit scope, audience, expiry or revocation path, and an audit label
+
 ### Requirement: Self-custody and provider-detach verification
 If the product exposes self-custody, raw key export, or provider migration, the implementation SHALL verify that the exported or imported key controls the same wallet address before representing account continuity.
 

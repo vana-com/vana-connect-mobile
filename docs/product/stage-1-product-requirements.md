@@ -76,6 +76,8 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - The existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` should be treated as the first candidate home for the Vana identity issuer.
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
 - Oko raw key export is source-verified and locally reproduced for the secp256k1 / EVM path; the remaining launch question is the full mobile export UX and production support contract.
+- Oko does not currently appear to support EIP-7702 authorization or smart-account wallet APIs as shipped; Stage 1 should not depend on that capability unless Oko adds it, Vana forks/builds it, or the user migrates/export-imports into a 7702-capable wallet.
+- If Vana self-hosts Oko, Vana may customize the attached wallet UI, but any no-prompt wallet-authority behavior must be treated as scoped delegated/session authority with prior consent, not as ordinary user approval.
 - The implementation must avoid baking provider-specific IDs into protocol or product identity.
 - Legacy Para Vana App migration is not part of the first staging target unless leadership reverses that scope decision.
 
@@ -188,6 +190,8 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 7. Which Stage 1 subset can honestly land in 4 weeks, and what is the full Stage 1 estimate?
 8. Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path to the protocol participant model?
 9. Does the first implementation ask for delegate consent during onboarding, or defer it until DataConnect handoff, first app grant, auto-sync, export/recovery, or monetization?
+10. Does Vana need Oko EIP-7702 support for Stage 1, or can 7702 remain a later wallet/provider migration path?
+11. Does Vana modify Oko's attached approval UI, and if so, what is the product, legal, and security boundary for Vana-branded prompts and any no-prompt policy?
 
 ## Branch Policy
 

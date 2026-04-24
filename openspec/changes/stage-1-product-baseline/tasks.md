@@ -18,6 +18,10 @@
 - [ ] 2.8 Validate the full Oko key export UX in the target mobile/browser environment before making self-custody or provider migration a launch claim.
 - [ ] 2.9 Choose whether the first Stage 1 slice uses explicit delegate consent or deferred delegate consent.
 - [ ] 2.10 Define the delegated/session authority contract if background protocol actions are required without repeated wallet prompts.
+- [x] 2.11 Capture Oko self-hosting, license, approval-modal control, and EIP-7702 support boundaries; current evidence says Apache-2.0 is permissive, stock modal customization is limited, and EIP-7702/smart-account APIs are unsupported as shipped.
+- [ ] 2.12 Confirm Oko trademark/branding requirements for a Vana-branded self-hosted deployment.
+- [ ] 2.13 Decide whether Stage 1 needs Oko EIP-7702 support, a Vana fork/build, or no 7702 dependency.
+- [ ] 2.14 If any no-prompt wallet-authority behavior is required, define the prior-consent, scope, audience, expiry, revocation, and audit contract before implementation.
 
 ## 3. DP RPC Contracts
 
