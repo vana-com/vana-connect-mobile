@@ -28,6 +28,13 @@ The implementation SHALL keep the user wallet identity separate from authorized 
 - **WHEN** a server delegate stores, serves, or attests to user data
 - **THEN** the record identifies the wallet owner and the server authorization without replacing the user identity root
 
+### Requirement: User grant authority
+The implementation SHALL treat the user wallet as the authority for app permission grants. A Personal Server or authorized server identity SHALL only exercise, enforce, submit, or attest permissions within the user-approved grant or explicitly pre-authorized policy.
+
+#### Scenario: Server handles an app access request
+- **WHEN** a server delegate serves or attests data access for an app
+- **THEN** the record references the user-approved grant or pre-authorized policy that allowed the server action
+
 ### Requirement: Migration-safe records
 Connect, query, consent, and grant records SHALL preserve enough signed material or signed-message references to later flush or anchor records onchain without requiring the user to re-sign, re-link, or re-consent.
 

@@ -14,6 +14,13 @@ Permission requests SHALL require an explicit approve or deny decision and SHALL
 - **WHEN** an app requests user data
 - **THEN** the user sees the requested scopes and duration before approving or denying access
 
+### Requirement: User-owned grant authority
+The permission system SHALL treat the user as the grant authority. A Personal Server or authorized server identity SHALL NOT create a new app grant, expand scope, extend duration, or approve access unless the user explicitly approved the grant or pre-authorized the policy.
+
+#### Scenario: Server receives access outside an approved grant
+- **WHEN** an app asks a Personal Server or authorized server identity for access that is not covered by an existing user-approved grant or pre-authorized policy
+- **THEN** the server denies access or sends the user through an explicit permission decision
+
 ### Requirement: Shared consent record
 Grant and denial outcomes SHALL be recorded through the shared API path and appear in user-visible audit history.
 

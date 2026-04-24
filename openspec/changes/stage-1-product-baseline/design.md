@@ -47,6 +47,12 @@ The user wallet remains the identity root. The server participant/delegate shoul
 
 Alternative considered: make the mobile app itself the participant. That may be simpler in a demo, but it conflicts with cross-surface availability and makes background serving dependent on a user device.
 
+### Users grant permissions; servers exercise limited authority
+
+The user is the permission authority for app data access. A Personal Server or authorized server identity may store, enforce, serve, submit, or attest permissions only inside the scope, duration, and policy the user approved. The server should not create a new app grant, expand scope, extend duration, or approve access unless the user explicitly pre-authorized that policy.
+
+Alternative considered: allow the Personal Server to grant permissions independently. That weakens user control and makes audit records ambiguous about whether access was user-approved or server-selected.
+
 ### DP RPC is API semantics, not automatically storage
 
 Stage 1 should route identity-adjacent metadata, connection state, grant decisions, consent records, and query records through DP RPC semantics. That does not decide where records are physically stored. The storage decision remains open: hosted Personal Server, hosted projection of DataConnect local storage, or another hybrid can satisfy the product requirement if all surfaces see one dataset under one identity.

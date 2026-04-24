@@ -101,9 +101,12 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 
 ### Permission Grants
 
+- The user is the permission authority for app data access.
 - Permission requests must show requesting app, publisher, scopes, duration, and outcome choices.
 - Grant and denial events must be recorded in the shared API path.
 - Grant records must preserve enough signed material or signed-message reference to later submit or anchor onchain without a user re-sign.
+- A Personal Server or authorized server identity may store, enforce, serve, submit, or attest grants only within user-approved scope, duration, and policy.
+- A server must not create a new app grant, expand scope, extend duration, or approve access on behalf of the user unless the user explicitly pre-authorized that policy.
 - The UI should answer what app can access what data and for how long.
 - Scope editing can be exposed later; the current demo's "Adjust scopes" affordance should not imply it is implemented.
 
@@ -134,6 +137,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - A Personal Server, hosted Personal Server, or equivalent authorized server identity is the protocol participant / server delegate that stores, serves, or attests to user data on behalf of the wallet owner.
 - If a client bundles or controls a Personal Server, the server role remains separate from the client role.
 - The user wallet address remains the stable identity root; the Personal Server or server delegate should have its own key or credential authorized by the user's wallet and auditable as acting for that wallet owner.
+- For permissions, the user grants authority and the Personal Server exercises or enforces that authority within the approved grant or pre-authorized policy.
 - Stage 1 can choose a pragmatic hosted implementation, but it should not collapse the authorized server identity into an Oko user id, provider account id, or mobile app session.
 
 ### DataConnect to Web Transport

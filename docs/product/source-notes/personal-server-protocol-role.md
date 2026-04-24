@@ -21,6 +21,19 @@ An authorized server identity means a separate server key or credential that the
 
 Records should be able to show "server identity X acted for wallet owner Y under authorization Z."
 
+## Permission Authority
+
+The user is the permission authority. The Personal Server or authorized server identity can exercise authority the user has granted, but it should not be treated as the source of that authority.
+
+In practical terms:
+
+- the user can grant, deny, revoke, or update app permissions
+- the user can authorize a Personal Server to enforce or execute those decisions
+- the Personal Server can store, serve, submit, or attest records within the user-approved scope, duration, and policy
+- the Personal Server cannot create a new app grant, expand scope, or extend duration unless the user explicitly pre-authorized that policy
+
+The auditable record should read as "server identity X acted for wallet owner Y under grant or policy Z."
+
 ## Identity Refinement
 
 The newer persistent-identity framing keeps the same separation and makes the identity boundary more explicit:

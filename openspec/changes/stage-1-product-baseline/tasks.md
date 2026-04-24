@@ -22,6 +22,7 @@
 - [ ] 3.3 Replace seed memory reads with DP RPC-compatible data/metadata reads behind the client boundary.
 - [ ] 3.4 Replace local permission and connection logs with DP RPC-compatible write paths behind the client boundary.
 - [ ] 3.5 Define migration-safe signed material or signed-reference fields for connect, query, consent, and grant records.
+- [ ] 3.6 Define how server actions reference the user-approved grant or pre-authorized policy that allows them.
 
 ## 4. Personal Server and Hosted Storage
 
@@ -47,6 +48,7 @@
 - [ ] 6.4 Render audit/history from shared grant and consent records.
 - [ ] 6.5 Remove or disable scope-adjustment UI until a real grant-update flow exists.
 - [ ] 6.6 Add tests for active access explanation: app, publisher, scopes, duration or expiry, outcome, and timestamp.
+- [ ] 6.7 Add tests proving a server cannot create a new app grant, expand scope, extend duration, or approve access without user approval or pre-authorized policy.
 
 ## 7. Cross-Surface Acceptance Demo
 
