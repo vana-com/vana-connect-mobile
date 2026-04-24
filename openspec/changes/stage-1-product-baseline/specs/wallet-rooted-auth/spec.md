@@ -22,11 +22,11 @@ Hosted product sessions SHALL use a Vana-controlled credential, such as a Vana J
 - **THEN** it sends a Vana session credential whose canonical subject is the wallet address, not an Oko, Para, Privy, Supabase, email, or phone identifier
 
 ### Requirement: Account-domain issuer candidate
-The implementation SHALL treat the existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` as the first candidate home for the Vana identity issuer unless a design explicitly selects a separate service.
+The implementation SHALL treat the existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` as the first candidate home for the Vana identity issuer.
 
 #### Scenario: Issuer implementation is planned
 - **WHEN** the team designs the Vana identity issuer
-- **THEN** the design either extends the existing account-domain surface or documents why a separate `auth.vana.org`, `id.vana.org`, or equivalent service is required
+- **THEN** the design evaluates the existing account-domain surface as the issuer home
 
 ### Requirement: Provider independence
 The implementation SHALL keep embedded-wallet provider identifiers out of protocol identity, account lookup, grant identity, and downstream authorization contracts.

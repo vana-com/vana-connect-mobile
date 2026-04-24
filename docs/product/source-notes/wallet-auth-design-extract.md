@@ -28,7 +28,7 @@ Oko is the preferred first embedded wallet provider implementation, but the stab
 
 ## Vana-Owned Auth Infrastructure
 
-The prior design requires a Vana-owned auth or identity issuer. The earlier draft called this `auth.vana.org`, but the current implementation context already has `account.vana.org` / `account-dev.vana.org` in `vana-com/vana-connect`. Stage 1 should treat that existing account surface as the first candidate home unless a design explicitly rules it out.
+The prior design requires a Vana-owned auth or identity issuer. The current implementation context already has `account.vana.org` / `account-dev.vana.org` in `vana-com/vana-connect`. Stage 1 should treat that existing account surface as the first candidate home.
 
 The issuer contract still needs:
 

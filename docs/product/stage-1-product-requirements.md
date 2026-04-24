@@ -180,7 +180,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 3. What exact hosted storage shape should Stage 1 use?
 4. How does DataConnect desktop publish connected data for mobile and builder access?
 5. Which Oko components are operated by Vana, and where do those repos / deployment tasks live?
-6. Is the Vana identity issuer a JWT-only extension of `account.vana.org`, an OIDC-compatible account-domain provider, or a separate service with a documented reason to not use the existing account surface?
+6. Is the Vana identity issuer a JWT-only extension of `account.vana.org` or an OIDC-compatible account-domain provider?
 7. Which Stage 1 subset can honestly land in 4 weeks, and what is the full Stage 1 estimate?
 8. Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path to the protocol participant model?
 

@@ -10,7 +10,7 @@
 
 - [ ] 2.1 Verify Oko support for the required mobile/browser silent arbitrary EIP-191 signing flow using the agreed master-key nonce payload.
 - [ ] 2.2 Define the Vana auth issuer contract, including challenge endpoint, token exchange endpoint, JWT claims, JWKS, nonce TTL, provider audience validation, and key rotation.
-- [ ] 2.3 Evaluate implementing the Vana auth issuer as an extension of `account.vana.org` in `vana-com/vana-connect`; document any reason to create a separate service.
+- [ ] 2.3 Evaluate implementing the Vana auth issuer as an extension of `account.vana.org` in `vana-com/vana-connect`.
 - [ ] 2.4 Replace demo auth with a mobile auth adapter that consumes Vana session credentials and exposes `walletAddress` as the canonical subject.
 - [ ] 2.5 Add provider-independence tests or fixtures proving downstream code does not key accounts, grants, or API authorization by Oko-specific ids.
 - [ ] 2.6 Document the migration boundary for Para, Oko, and any future provider, including the no-email-auto-merge rule.
