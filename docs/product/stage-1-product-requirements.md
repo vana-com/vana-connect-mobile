@@ -74,6 +74,8 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - Hosted product sessions should use a Vana-controlled identity credential, not a vendor-scoped identifier as the canonical subject.
 - Routine session refresh should use Vana-owned credentials and must not depend on Oko silently signing arbitrary EIP-191 messages.
 - The existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` should be treated as the first candidate home for the Vana identity issuer.
+- OIDC-compatible "Log in with Vana" is an ideal stretch goal for internal apps, builder apps, and partner surfaces, but it should not block the first wallet-rooted auth implementation.
+- The first issuer should keep token semantics compatible with later OIDC support: stable issuer URL, wallet-rooted subject, audience/client boundaries, JWKS, expiration, and key id.
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
 - Oko raw key export is source-verified and locally reproduced for the secp256k1 / EVM path; the remaining launch question is the full mobile export UX and production support contract.
 - Oko does not currently appear to support EIP-7702 authorization or smart-account wallet APIs as shipped; Stage 1 should not depend on that capability unless Oko adds it, Vana forks/builds it, or the user migrates/export-imports into a 7702-capable wallet.
@@ -186,7 +188,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 3. What exact hosted storage shape should Stage 1 use?
 4. How does DataConnect desktop publish connected data for mobile and builder access?
 5. Which Oko components are operated by Vana, and where do those repos / deployment tasks live?
-6. Is the Vana identity issuer a JWT-only extension of `account.vana.org` or an OIDC-compatible account-domain provider?
+6. Which concrete client should justify OIDC-compatible "Log in with Vana" first: an internal Vana web app, DataConnect, Context Gateway / builder apps, or an external partner?
 7. Which Stage 1 subset can honestly land in 4 weeks, and what is the full Stage 1 estimate?
 8. Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path to the protocol participant model?
 9. Does the first implementation ask for delegate consent during onboarding, or defer it until DataConnect handoff, first app grant, auto-sync, export/recovery, or monetization?

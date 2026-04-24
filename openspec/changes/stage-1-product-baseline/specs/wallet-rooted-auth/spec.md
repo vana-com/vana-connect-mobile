@@ -35,6 +35,17 @@ The implementation SHALL treat the existing `account.vana.org` / `account-dev.va
 - **WHEN** the team designs the Vana identity issuer
 - **THEN** the design evaluates the existing account-domain surface as the issuer home
 
+### Requirement: OIDC-compatible login remains a non-blocking stretch goal
+The identity design SHALL preserve a path to OIDC-compatible "Log in with Vana" while allowing the first wallet-rooted auth implementation to ship without a full OIDC provider.
+
+#### Scenario: First auth slice uses Vana token exchange
+- **WHEN** the first wallet-rooted auth implementation issues Vana sessions
+- **THEN** mobile and first-party services MAY use Vana challenge, token exchange, JWT, refresh, and JWKS semantics without requiring OIDC discovery or authorization-code flow
+
+#### Scenario: Standard login client is identified
+- **WHEN** an internal app, builder-facing app, or partner integration needs standard OAuth/OIDC consumption
+- **THEN** the team defines a follow-up "Log in with Vana" implementation scope before claiming OIDC compatibility
+
 ### Requirement: Provider independence
 The implementation SHALL keep embedded-wallet provider identifiers out of protocol identity, account lookup, grant identity, and downstream authorization contracts.
 

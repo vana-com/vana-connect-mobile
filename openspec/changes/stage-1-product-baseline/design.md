@@ -45,6 +45,8 @@ Because Vana expects to self-host and may fork Oko, Vana can likely modify the a
 
 `account.vana.org` / `account-dev.vana.org` already exists in `vana-com/vana-connect` as the account surface for DataConnect handoff. Stage 1 should evaluate extending that account-domain surface for the Vana issuer.
 
+OIDC-compatible "Log in with Vana" is a desirable stretch goal after the issuer semantics are proven. It would let internal Vana web apps, builder apps, and partner surfaces use standard OAuth/OIDC libraries while still consuming Vana-issued, wallet-rooted identity. The first auth implementation should not require full OIDC, but it should avoid decisions that would make OIDC awkward later.
+
 Alternative considered: use provider identity directly. That is simpler initially but makes cross-surface migration and provider replacement harder.
 
 ### Personal Server or authorized server identity is the protocol participant
@@ -113,6 +115,6 @@ Rollback for this PR is documentation-only: close or revert the staging baseline
 - Which Oko components does Vana operate, and in which repos?
 - Does Vana need Oko 7702 support in Stage 1, or can 7702 remain a later provider/migration path?
 - Does Vana modify Oko's attached wallet UI, and what prior-consent policy governs any no-prompt signing?
-- Is the first auth issuer a JWT-only extension of `account.vana.org` or an OIDC-compatible account-domain provider?
+- Which concrete client should justify OIDC-compatible "Log in with Vana" first: an internal Vana web app, DataConnect, Context Gateway / builder apps, or an external partner?
 - Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path?
 - Does Stage 1 ask for delegate consent early, or defer it until a high-intent action?

@@ -22,6 +22,7 @@
 - [ ] 2.12 Confirm Oko trademark/branding requirements for a Vana-branded self-hosted or forked deployment.
 - [ ] 2.13 Decide whether Stage 1 needs Oko EIP-7702 support, a Vana fork/build, or no 7702 dependency.
 - [ ] 2.14 If any no-prompt wallet-authority behavior is required, define the prior-consent, scope, audience, expiry, revocation, and audit contract before implementation.
+- [ ] 2.15 Record OIDC-compatible "Log in with Vana" as a stretch goal and identify the first internal, builder-facing, or partner client that would justify implementing it.
 
 ## 3. DP RPC Contracts
 
