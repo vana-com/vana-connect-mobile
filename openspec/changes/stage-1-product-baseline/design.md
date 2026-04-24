@@ -41,7 +41,7 @@ Oko should not be assumed to support silent arbitrary EIP-191 signing. Source va
 
 Oko also should not be assumed to support EIP-7702 authorization or smart-account wallet APIs as shipped. The current source ignores EIP-7702 transaction fields and does not expose `wallet_sendCalls`, `wallet_getCapabilities`, or wallet permission APIs. If Stage 1 needs 7702, that is Oko roadmap work, Vana fork work, or a migration/export-import path to a 7702-capable wallet.
 
-Because Vana expects to self-host Oko, Vana can likely modify the attached wallet UI and operate a Vana-branded deployment under Apache-2.0 license terms. That does not remove the need for legal/trademark review or for a product/security decision on no-prompt signing. Any auto-approval or hidden approval path should be modeled as scoped delegated/session authority with prior consent, not as ordinary user approval.
+Because Vana expects to self-host and may fork Oko, Vana can likely modify the attached wallet UI and operate a Vana-branded deployment under Apache-2.0 license terms. That does not remove the need for legal/trademark review or for a product/security decision on no-prompt signing. Any auto-approval or hidden approval path should be modeled as scoped delegated/session authority with prior consent, not as ordinary user approval.
 
 `account.vana.org` / `account-dev.vana.org` already exists in `vana-com/vana-connect` as the account surface for DataConnect handoff. Stage 1 should evaluate extending that account-domain surface for the Vana issuer.
 
@@ -85,7 +85,7 @@ Alternative considered: ignore onchain compatibility until later. That risks vio
 
 - Oko does not appear to support silent arbitrary EIP-191 signing in the required mobile/browser session context as shipped. Mitigation: design routine session refresh around Vana-owned credentials, and use wallet-rooted signatures only for explicit authority events unless Oko provides a documented constrained policy-signing feature.
 - Oko does not appear to support EIP-7702 authorization or smart-account wallet APIs as shipped. Mitigation: do not make 7702 a Stage 1 dependency unless Oko commits support, Vana owns a fork/build, or the flow explicitly uses export/import into a 7702-capable wallet.
-- Self-hosting gives Vana control over Oko UI and signing-flow code, but no-prompt signing can blur the distinction between user approval and delegated authority. Mitigation: require explicit scope, audience, expiry, revocation, and audit semantics before any no-prompt wallet-authority behavior.
+- Self-hosting or forking gives Vana control over Oko UI and signing-flow code, but no-prompt signing can blur the distinction between user approval and delegated authority. Mitigation: require explicit scope, audience, expiry, revocation, and audit semantics before any no-prompt wallet-authority behavior.
 - Oko key export is source-verified for the secp256k1 / EVM path, but full production UX is not verified. Mitigation: keep export/self-custody as a validated design assumption, not a launch claim, until mobile and managed-service behavior are tested.
 - The Vana auth issuer does not live in this repo. Mitigation: specify the contract here and track implementation against the existing `account.vana.org` surface in `vana-com/vana-connect`.
 - DP RPC may have gaps for the required metadata, grants, consent, and audit records. Mitigation: require a gap inventory before implementation claims Stage 1 readiness.

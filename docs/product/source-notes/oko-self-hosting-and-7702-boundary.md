@@ -5,16 +5,16 @@ Date: 2026-04-24
 
 ## Questions
 
-- If Vana self-hosts Oko, what can be customized?
+- If Vana self-hosts and/or forks Oko, what can be customized?
 - Can Vana remove or automatically approve Oko signing prompts?
 - Does Oko currently support EIP-7702, smart-account wallet APIs, or session-key style authorization?
 - Is Oko's license permissive enough for a Vana-branded deployment?
 
 ## Short Answer
 
-Oko is Apache-2.0 licensed and designed to be self-hosted. That is permissive enough to modify and operate a Vana-branded deployment, subject to preserving required license/copyright notices and separately respecting trademark/branding rules.
+Oko is Apache-2.0 licensed and designed to be self-hosted. That is permissive enough to fork, modify, and operate a Vana-branded deployment, subject to preserving required license/copyright notices and separately respecting trademark/branding rules.
 
-Stock Oko SDK customization appears limited at the integration layer. The public React/core SDK exposes `theme: "light" | "dark"`, while the approval UI itself lives in Oko's attached-wallet React app. A Vana-controlled, deeply customized approval experience therefore likely means self-hosting and modifying the attached-wallet UI, or asking Oko for a supported customization surface.
+Stock Oko SDK customization appears limited at the integration layer. The public React/core SDK exposes `theme: "light" | "dark"`, while the approval UI itself lives in Oko's attached-wallet React app. A Vana-controlled, deeply customized approval experience therefore likely means self-hosting a Vana fork that modifies the attached-wallet UI, or asking Oko for a supported customization surface.
 
 Oko does not currently appear to support EIP-7702 authorization or smart-account wallet APIs as shipped. The ETH SDK explicitly ignores EIP-7702 transaction fields, the supported wallet RPC set excludes current wallet capability / batch-call / permission APIs, and the only EIP-7702 test path found is disabled. No public Oko-specific roadmap item was found in the searched docs, source, issues, or PRs.
 
@@ -24,7 +24,7 @@ With a self-hosted fork, Vana could technically change the approval flow or auto
 
 Oko source checked: `https://github.com/chainapsis/oko.git` at commit `c25214e7c401a7e472d4fdff161fe53dffa56555`.
 
-License and self-hosting:
+License, self-hosting, and forking:
 
 - `LICENSE` is Apache License 2.0.
 - `README.md` says the project is "Apache-2.0 licensed" and that components are designed to be self-hosted with architectural control and customization.
@@ -58,7 +58,7 @@ Observed public demo shape:
 
 ## Product Implication
 
-Self-hosting makes Oko a modifiable wallet infrastructure candidate, not a complete delegation system.
+Self-hosting or forking makes Oko a modifiable wallet infrastructure candidate, not a complete delegation system.
 
 For Stage 1, the safer baseline is:
 
@@ -71,8 +71,8 @@ For Stage 1, the safer baseline is:
 ## Still Unverified
 
 - Oko maintainer confirmation on intended 7702 roadmap and timing.
-- Legal/trademark review for exactly how Vana may remove or replace Oko marks in a self-hosted product.
+- Legal/trademark review for exactly how Vana may remove or replace Oko marks in a self-hosted or forked product.
 - Whether Oko will support a first-class white-label approval-modal customization API.
-- Whether Vana should fork Oko UI code or upstream customization hooks.
+- Whether Vana should fork Oko UI/signing-flow code, upstream customization hooks, or do both.
 - Whether no-prompt signing is acceptable for any scoped Vana flow, and if so, the exact consent, expiry, revocation, and audit model.
 - Live mobile/browser export UX and target-wallet import into a 7702-capable wallet.

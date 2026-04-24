@@ -77,7 +77,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
 - Oko raw key export is source-verified and locally reproduced for the secp256k1 / EVM path; the remaining launch question is the full mobile export UX and production support contract.
 - Oko does not currently appear to support EIP-7702 authorization or smart-account wallet APIs as shipped; Stage 1 should not depend on that capability unless Oko adds it, Vana forks/builds it, or the user migrates/export-imports into a 7702-capable wallet.
-- If Vana self-hosts Oko, Vana may customize the attached wallet UI, but any no-prompt wallet-authority behavior must be treated as scoped delegated/session authority with prior consent, not as ordinary user approval.
+- If Vana self-hosts or forks Oko, Vana may customize the attached wallet UI, but any no-prompt wallet-authority behavior must be treated as scoped delegated/session authority with prior consent, not as ordinary user approval.
 - The implementation must avoid baking provider-specific IDs into protocol or product identity.
 - Legacy Para Vana App migration is not part of the first staging target unless leadership reverses that scope decision.
 
