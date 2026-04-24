@@ -37,6 +37,8 @@ The stable account subject is the wallet address. Hosted product sessions should
 
 Oko is the preferred first embedded-wallet implementation because the current strategy favors invisible wallet creation and familiar login. The product contract must remain provider-agnostic: provider tokens are inputs to Vana token exchange, not downstream service credentials.
 
+`account.vana.org` / `account-dev.vana.org` already exists in `vana-com/vana-connect` as the account surface for DataConnect handoff. Stage 1 should evaluate extending that account-domain surface for the Vana issuer before introducing a new `auth.vana.org` or `id.vana.org` service.
+
 Alternative considered: use provider identity directly. That is simpler initially but makes cross-surface migration and provider replacement harder.
 
 ### Personal Server or authorized server identity is the protocol participant
@@ -74,7 +76,7 @@ Alternative considered: ignore onchain compatibility until later. That risks vio
 ## Risks / Trade-offs
 
 - Oko may not support silent arbitrary EIP-191 signing in the required mobile/browser session context. Mitigation: make this a pre-adoption task and keep the Vana session contract provider-agnostic.
-- The Vana auth issuer does not live in this repo. Mitigation: specify the contract here and track issuer implementation as a separate work package.
+- The Vana auth issuer does not live in this repo. Mitigation: specify the contract here and track implementation against the existing `account.vana.org` surface in `vana-com/vana-connect` unless a separate service is explicitly chosen.
 - DP RPC may have gaps for the required metadata, grants, consent, and audit records. Mitigation: require a gap inventory before implementation claims Stage 1 readiness.
 - Cross-surface storage is not yet designed. Mitigation: define the product invariant first and make the storage topology a separate design task.
 - Context Gateway scope is internally inconsistent in the source material. Mitigation: allow a Stage 1 equivalent builder API path until CG investment is explicitly approved.
@@ -98,5 +100,5 @@ Rollback for this PR is documentation-only: close or revert the staging baseline
 - What hosted storage topology should Stage 1 use?
 - How does DataConnect publish local connected data for mobile and builder access?
 - Which Oko components does Vana operate, and in which repos?
-- Is the first auth issuer a JWT issuer only, an OIDC-compatible provider, or an auth service behind an existing account domain?
+- Is the first auth issuer a JWT-only extension of `account.vana.org`, an OIDC-compatible account-domain provider, or a separate service with a documented reason to not use the existing account surface?
 - Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path?

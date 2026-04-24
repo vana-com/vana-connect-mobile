@@ -34,4 +34,4 @@ None.
 - `docs/product/source-notes/*.md`
 - `openspec/changes/stage-1-product-baseline/`
 - Future implementation surfaces under `app/`, `components/`, `hooks/`, and `lib/`
-- External dependencies that will need separate work: Oko or compatible embedded wallet infrastructure, Vana identity/JWT issuer, DP RPC, hosted user storage, DataConnect sync path, and Context Gateway user-auth/consent handoff.
+- External dependencies that will need separate work: Oko or compatible embedded wallet infrastructure, Vana identity/JWT issuer likely extending `account.vana.org` in `vana-com/vana-connect`, DP RPC, hosted user storage, DataConnect sync path, and Context Gateway user-auth/consent handoff.

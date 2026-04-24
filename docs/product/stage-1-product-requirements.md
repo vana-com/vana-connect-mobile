@@ -72,6 +72,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - The product must link auth to a wallet address.
 - The wallet address must be the stable identity root consumed by downstream protocol surfaces.
 - Hosted product sessions should use a Vana-controlled identity credential, not a vendor-scoped identifier as the canonical subject.
+- The existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` should be treated as the first candidate home for the Vana identity issuer.
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
 - The implementation must avoid baking provider-specific IDs into protocol or product identity.
 - Legacy Para Vana App migration is not part of the first staging target unless leadership reverses that scope decision.
@@ -179,7 +180,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 3. What exact hosted storage shape should Stage 1 use?
 4. How does DataConnect desktop publish connected data for mobile and builder access?
 5. Which Oko components are operated by Vana, and where do those repos / deployment tasks live?
-6. What is the initial Vana identity issuer shape: JWT issuer only, OIDC-compatible provider, or auth service behind an existing account domain?
+6. Is the Vana identity issuer a JWT-only extension of `account.vana.org`, an OIDC-compatible account-domain provider, or a separate service with a documented reason to not use the existing account surface?
 7. Which Stage 1 subset can honestly land in 4 weeks, and what is the full Stage 1 estimate?
 8. Does Stage 1 use a registered Personal Server, an authorized hosted server identity, or a transitional hosted service with a documented migration path to the protocol participant model?
 

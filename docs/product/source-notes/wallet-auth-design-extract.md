@@ -28,7 +28,9 @@ Oko is the preferred first embedded wallet provider implementation, but the stab
 
 ## Vana-Owned Auth Infrastructure
 
-The prior design requires an auth service, named `auth.vana.org` in the draft, with:
+The prior design requires a Vana-owned auth or identity issuer. The earlier draft called this `auth.vana.org`, but the current implementation context already has `account.vana.org` / `account-dev.vana.org` in `vana-com/vana-connect`. Stage 1 should treat that existing account surface as the first candidate home unless a design explicitly rules it out.
+
+The issuer contract still needs:
 
 - `POST /v1/auth/challenge`
 - `POST /v1/auth/token`
@@ -40,7 +42,13 @@ The prior design requires an auth service, named `auth.vana.org` in the draft, w
 - key rotation
 - Vana JWT claims including `iss`, `sub`, `aud`, `iat`, `exp`, and explicit `walletAddress`
 
-This service does not live in `vana-connect-mobile`. This repo should integrate against the contract once it exists, and may use a local mock only if the mock has the same semantics.
+This service does not live in `vana-connect-mobile`. This repo should integrate against the account-domain contract once it exists, and may use a local mock only if the mock has the same semantics.
+
+Relevant existing `vana-com/vana-connect` context:
+
+- SDK environment config already includes `accountUrl` values for `https://account-dev.vana.org` and `https://account.vana.org`.
+- Session initialization returns a `connectUrl` where the user signs in on `account.vana.org` and launches Data Connect.
+- Existing account-flow docs describe a Privy-to-`account.vana.org` migration, including web login and signing callbacks.
 
 ## Oko Infrastructure Outside This Repo
 
@@ -81,6 +89,6 @@ If autonomous/background signing is required under Oko, that is a separate sessi
 
 - Confirm Oko supports the required silent signing behavior in the target client environment.
 - Decide whether Stage 1 requires Apple OAuth or can start with email/phone and Google.
-- Decide where the Vana auth issuer will live and who owns it.
+- Decide whether the Vana auth issuer is implemented as an extension of `account.vana.org` in `vana-com/vana-connect`, and what repo/deployment changes are required.
 - Decide whether the first mobile auth PR uses a local mock issuer or waits for real issuer infrastructure.
 - Decide how to test provider independence without implementing a second provider.
