@@ -14,6 +14,10 @@ The implementation SHALL distinguish DP RPC API semantics from the physical stor
 - **WHEN** Stage 1 uses hosted storage or a hosted projection of DataConnect local data
 - **THEN** the implementation still exposes identity, metadata, grants, consent, and query records through DP RPC-compatible semantics
 
+#### Scenario: First identity checkpoint writes through DP RPC
+- **WHEN** the first identity/RPC checkpoint is implemented
+- **THEN** the team SHALL define and execute at least one user-scoped DP RPC event without requiring the final physical storage topology to be chosen first
+
 ### Requirement: Personal Server protocol role
 The implementation SHALL preserve the protocol distinction between client apps and protocol participants: mobile, desktop, Context Gateway, and builder apps are clients; a Personal Server, hosted Personal Server, hosted storage service, or equivalent authorized server identity is the protocol participant or server delegate.
 

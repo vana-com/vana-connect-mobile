@@ -41,11 +41,11 @@ Oko should not be assumed to support silent arbitrary EIP-191 signing. Source va
 
 Oko also should not be assumed to support EIP-7702 authorization or smart-account wallet APIs as shipped. The current source ignores EIP-7702 transaction fields and does not expose `wallet_sendCalls`, `wallet_getCapabilities`, or wallet permission APIs. If Stage 1 needs 7702, that is Oko roadmap work, Vana fork work, or a migration/export-import path to a 7702-capable wallet.
 
-Because Vana expects to self-host and may fork Oko, Vana can likely modify the attached wallet UI and operate a Vana-branded deployment under Apache-2.0 license terms. That does not remove the need for legal/trademark review or for a product/security decision on no-prompt signing. Any auto-approval or hidden approval path should be modeled as scoped delegated/session authority with prior consent, not as ordinary user approval.
+Stock Oko is acceptable until it blocks the target UX, security posture, or proof contract. If Vana later self-hosts or forks Oko, Vana can likely modify the attached wallet UI and operate its own deployment under Apache-2.0 license terms. That does not remove the need for legal/trademark review or for a product/security decision on no-prompt signing. Any auto-approval or hidden approval path should be modeled as scoped delegated/session authority with prior consent, not as ordinary user approval.
 
 `account.vana.org` / `account-dev.vana.org` already exists in `vana-com/vana-connect` as the account surface for DataConnect handoff. Stage 1 should evaluate extending that account-domain surface for the Vana issuer.
 
-OIDC-compatible "Log in with Vana" is a desirable stretch goal after the issuer semantics are proven. It would let internal Vana web apps, builder apps, and partner surfaces use standard OAuth/OIDC libraries while still consuming Vana-issued, wallet-rooted identity. The first auth implementation should not require full OIDC, but it should avoid decisions that would make OIDC awkward later.
+OIDC-compatible "Log in with Vana" should be included optimistically after the issuer semantics are proven. It would let internal Vana web apps, builder apps, and partner surfaces use standard OAuth/OIDC libraries while still consuming Vana-issued, wallet-rooted identity. The first auth implementation should not require full OIDC, but it should avoid decisions that would make OIDC awkward later.
 
 Alternative considered: use provider identity directly. That is simpler initially but makes cross-surface migration and provider replacement harder.
 
@@ -67,7 +67,7 @@ Alternative considered: allow the Personal Server to grant permissions independe
 
 ### DP RPC is API semantics, not automatically storage
 
-Stage 1 should route identity-adjacent metadata, connection state, grant decisions, consent records, and query records through DP RPC semantics. That does not decide where records are physically stored. The storage decision remains open: hosted Personal Server, hosted projection of DataConnect local storage, or another hybrid can satisfy the product requirement if all surfaces see one dataset under one identity.
+Stage 1 should route identity-adjacent metadata, connection state, grant decisions, consent records, and query records through DP RPC semantics. That does not decide where records are physically stored. The storage decision remains open and should not block the first identity/RPC checkpoint; the checkpoint only needs an agreed DP RPC event contract and a place to execute it.
 
 Alternative considered: treat DP RPC as both API and storage. The leadership scoping explicitly keeps storage as an engineering decision.
 

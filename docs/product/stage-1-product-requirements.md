@@ -26,6 +26,8 @@ The Stage 1 target is a protocol-powered mobile product that can participate in 
 
 The raw `Protocol scoping.md` file contains large embedded image payloads. The branch should rely on this requirements doc and the source-note extracts rather than treating the raw export as the long-term review surface.
 
+For execution alignment, use `docs/product/stage-1-execution-brief.md` as the first integration checkpoint. This requirements document remains the broader Stage 1 target.
+
 ## Target Product
 
 The target is not a clean-room rebuild and not a literal clone of the demo. It is the current demo's product idea connected to protocol-backed identity, storage, grants, and app access.
@@ -74,9 +76,10 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 - Hosted product sessions should use a Vana-controlled identity credential, not a vendor-scoped identifier as the canonical subject.
 - Routine session refresh should use Vana-owned credentials and must not depend on Oko silently signing arbitrary EIP-191 messages.
 - The existing `account.vana.org` / `account-dev.vana.org` surface in `vana-com/vana-connect` should be treated as the first candidate home for the Vana identity issuer.
-- OIDC-compatible "Log in with Vana" is an ideal stretch goal for internal apps, builder apps, and partner surfaces, but it should not block the first wallet-rooted auth implementation.
+- OIDC-compatible "Log in with Vana" should be included optimistically as a stretch goal for internal apps, builder apps, and partner surfaces, but it must remain separable from the first wallet-rooted auth implementation if it risks blocking the integration checkpoint.
 - The first issuer should keep token semantics compatible with later OIDC support: stable issuer URL, wallet-rooted subject, audience/client boundaries, JWKS, expiration, and key id.
 - Oko is the preferred first implementation target for embedded wallet infrastructure, but requirements should remain provider-agnostic where possible.
+- Stock Oko is acceptable until it blocks the target UX, security posture, or proof contract.
 - Oko raw key export is source-verified and locally reproduced for the secp256k1 / EVM path; the remaining launch question is the full mobile export UX and production support contract.
 - Oko does not currently appear to support EIP-7702 authorization or smart-account wallet APIs as shipped; Stage 1 should not depend on that capability unless Oko adds it, Vana forks/builds it, or the user migrates/export-imports into a 7702-capable wallet.
 - If Vana self-hosts or forks Oko, Vana may customize the attached wallet UI, but any no-prompt wallet-authority behavior must be treated as scoped delegated/session authority with prior consent, not as ordinary user approval.
@@ -138,6 +141,7 @@ This bar is intentionally broader than the first auth PR. Auth is one slice of t
 
 - Stage 1 likely needs centrally hosted user storage so mobile, desktop, and builder-facing APIs can see the same dataset without requiring the user's device to be online.
 - The storage shape is still an engineering decision: hosted personal server, hosted projection of DataConnect local storage, or another hybrid.
+- Storage topology should not block the first identity/RPC checkpoint; the checkpoint only needs an agreed DP RPC event contract and a place to execute it.
 - The product requirement is availability across surfaces; the implementation choice remains open.
 
 ### Personal Server Protocol Role

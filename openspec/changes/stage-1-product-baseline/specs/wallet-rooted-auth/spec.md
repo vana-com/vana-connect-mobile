@@ -35,8 +35,8 @@ The implementation SHALL treat the existing `account.vana.org` / `account-dev.va
 - **WHEN** the team designs the Vana identity issuer
 - **THEN** the design evaluates the existing account-domain surface as the issuer home
 
-### Requirement: OIDC-compatible login remains a non-blocking stretch goal
-The identity design SHALL preserve a path to OIDC-compatible "Log in with Vana" while allowing the first wallet-rooted auth implementation to ship without a full OIDC provider.
+### Requirement: OIDC-compatible login remains an optimistic non-blocking goal
+The identity design SHALL preserve a path to OIDC-compatible "Log in with Vana" while allowing the first wallet-rooted auth implementation to ship without a full OIDC provider if OIDC risks blocking the first integration checkpoint.
 
 #### Scenario: First auth slice uses Vana token exchange
 - **WHEN** the first wallet-rooted auth implementation issues Vana sessions

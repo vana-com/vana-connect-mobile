@@ -9,7 +9,7 @@ This change turns the demo and the protocol-scoping doc into a staging baseline 
 - Add a product requirements baseline for the Stage 1 mobile product.
 - Preserve the current demo's useful product surfaces while marking localStorage, seed data, and mock auth as demo implementation details.
 - Define wallet-rooted auth as the identity target, with Oko as the preferred first implementation and provider independence as a requirement.
-- Treat OIDC-compatible "Log in with Vana" as an ideal stretch goal for standard internal, builder-facing, or partner app consumption, not as a blocker for the first wallet-rooted auth slice.
+- Include OIDC-compatible "Log in with Vana" optimistically as a stretch goal for standard internal, builder-facing, or partner app consumption, not as a blocker for the first wallet-rooted auth slice.
 - Define DP RPC-backed data semantics for memory, connection state, app metadata, grants, consent, and audit history.
 - Define the one-user-three-surfaces acceptance bar as the staging branch's north star.
 - Capture open decisions that must be resolved before implementation claims completeness, especially Context Gateway scope, hosted storage shape, and Oko infrastructure ownership.
