@@ -2,37 +2,58 @@
 
 This repo uses Excalidraw as a shared product-flow canvas.
 
-There is no Excalidraw workspace, login, plugin, or Codex integration. The workflow is deliberately simple:
+There is no Excalidraw workspace, login, plugin, or MCP integration. The workflow is deliberately simple:
 
 1. The `.excalidraw` file lives in Git.
-2. Excalidraw is only the editor.
+2. Excalidraw is the drawing format and editor.
 3. The repo is the source of truth.
 
 ## Current Canvas
 
-Open this file in Excalidraw:
+The canonical canvas file is:
 
 `docs/flows/260428-vana-mobile-production-flow-map.excalidraw`
 
-Use the normal external browser at:
+## Mode 1: Product Discussion
 
-`https://excalidraw.com/`
-
-Do not use the Codex in-app browser for importing the file. It blocks the browser file APIs Excalidraw needs.
-
-## Editing Workflow
+Use this when working with a product manager or anyone outside the local dev loop.
 
 1. Pull the latest branch.
-2. Open `https://excalidraw.com/` in a normal browser.
+2. Open `https://excalidraw.com/` in a normal external browser.
 3. Import `docs/flows/260428-vana-mobile-production-flow-map.excalidraw`.
-4. Edit the canvas.
+4. Edit the canvas together.
 5. Export/save the updated `.excalidraw` file.
 6. Replace the repo file with the updated version.
 7. Commit the changed `.excalidraw` file.
 
+Do not use the Codex in-app browser for importing the file. It blocks the browser file APIs Excalidraw needs.
+
+If the discussion creates a meaningfully different map, save a dated version instead of overwriting the canonical file.
+
+Example:
+
+`docs/flows/260428-vana-mobile-production-flow-map-v2.excalidraw`
+
+## Mode 2: Live Codex Editing
+
+Use this when discussing the canvas with Codex.
+
+1. Run the app locally: `npm run dev`.
+2. Open `http://localhost:3084/dev/excalidraw`.
+3. Keep that browser tab open.
+4. Ask Codex to change the flow map.
+5. Codex edits the repo file.
+6. The local canvas polls the file and updates automatically.
+
+Browser edits in `/dev/excalidraw` also save back to the same repo file.
+
+This local route is dev-only. It reads and writes:
+
+`docs/flows/260428-vana-mobile-production-flow-map.excalidraw`
+
 ## Agent Workflow
 
-An agent can update the canvas by editing the `.excalidraw` JSON directly, but it should preserve the same file path:
+An agent should update the canvas by editing the `.excalidraw` JSON directly and preserving the same file path:
 
 `docs/flows/260428-vana-mobile-production-flow-map.excalidraw`
 

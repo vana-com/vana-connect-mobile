@@ -17,6 +17,7 @@ Reasons:
 - It stores editable drawings as `.excalidraw` JSON files.
 - Codex can draft and revise those files directly.
 - Product/design can edit the same files visually.
+- The local `/dev/excalidraw` route lets Codex edits show up in-browser without reimporting.
 - The repo keeps ownership of the source artifacts.
 - No Figma dependency is required.
 
@@ -48,6 +49,18 @@ The Markdown file is the deterministic source. The Excalidraw file is the editab
 4. Review the canvas with product/design.
 5. Bring the edited canvas back into Codex for cleanup, normalization, or implementation planning.
 6. Only then touch app code.
+
+## Live Codex Loop
+
+For live editing with Codex:
+
+1. Run `npm run dev`.
+2. Open `http://localhost:3084/dev/excalidraw`.
+3. Keep the canvas open while discussing changes.
+4. Codex edits the repo `.excalidraw` file.
+5. The dev canvas reloads file changes automatically.
+
+This does not require MCP. It uses the official `@excalidraw/excalidraw` React package plus a dev-only file sync API.
 
 ## Flow Source Template
 
