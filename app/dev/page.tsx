@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "/dev/audit", label: "Audit trail", description: "Every approve/deny logged to Supabase" },
+  { href: "/dev/excalidraw", label: "Flow map", description: "Live repo-synced Excalidraw canvas" },
   { href: "/dev/reset", label: "Reset local data", description: "Clears connection state from localStorage" },
   { href: "/dev/components", label: "Component preview", description: "Every UI primitive in isolation" },
   { href: "/memory", label: "Memory screen", description: "" },
