@@ -17,7 +17,10 @@ const POST_LOGIN_INTENT_IMPORT = "import_chatgpt";
 
 export async function GET(request: NextRequest) {
   try {
-    const config = getOidcDemoConfig(PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE);
+    const config = getOidcDemoConfig(
+      PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
+      request.nextUrl.origin,
+    );
     const discovery = await discoverOidc(config.issuer);
     const pkce = createPkcePair();
     const state = createOpaqueValue();

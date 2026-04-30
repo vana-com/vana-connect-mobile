@@ -54,6 +54,7 @@ type JwtClaims = Record<string, DemoJson | undefined>;
 
 export function getOidcDemoConfig(
   surface: LoginWithVanaOidcSurface = DEV_LOGIN_WITH_VANA_OIDC_SURFACE,
+  appOrigin?: string,
 ): OidcDemoConfig {
   return {
     issuer: trimTrailingSlash(
@@ -62,7 +63,7 @@ export function getOidcDemoConfig(
     clientId: process.env.VANA_DEMO_OIDC_CLIENT_ID ?? "memory-app-dev",
     redirectUri:
       readSurfaceEnv(surface.oidcRedirectUriEnv) ??
-      `${getDemoAppOrigin()}${surface.basePath}/callback`,
+      `${getDemoAppOrigin(appOrigin)}${surface.basePath}/callback`,
     scope:
       process.env.VANA_DEMO_OIDC_SCOPE ?? "openid profile email offline_access",
     audience: process.env.VANA_DEMO_OIDC_AUDIENCE ?? null,
@@ -316,9 +317,9 @@ function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
 }
 
-function getDemoAppOrigin() {
+function getDemoAppOrigin(appOrigin?: string) {
   return trimTrailingSlash(
-    process.env.VANA_DEMO_APP_ORIGIN ?? "http://localhost:3084",
+    process.env.VANA_DEMO_APP_ORIGIN ?? appOrigin ?? "http://localhost:3084",
   );
 }
 

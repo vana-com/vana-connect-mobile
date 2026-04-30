@@ -9,8 +9,11 @@ import {
 
 export const runtime = "nodejs";
 
-export async function POST(_request: NextRequest) {
-  const config = getAccountActionConfig(PUBLIC_LOGIN_WITH_VANA_ACTION_SURFACE);
+export async function POST(request: NextRequest) {
+  const config = getAccountActionConfig(
+    PUBLIC_LOGIN_WITH_VANA_ACTION_SURFACE,
+    request.nextUrl.origin,
+  );
   const state = createOpaqueState();
 
   const body = {

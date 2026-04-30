@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       throw new Error("Missing PKCE verifier or nonce cookie");
     }
 
-    const config = getOidcDemoConfig();
+    const config = getOidcDemoConfig(undefined, request.nextUrl.origin);
     const discovery = await discoverOidc(config.issuer);
     const tokens = await exchangeCodeForTokens({
       code,

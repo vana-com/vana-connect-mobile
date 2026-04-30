@@ -8,8 +8,8 @@ import {
 
 export const runtime = "nodejs";
 
-export async function POST(_request: NextRequest) {
-  const config = getAccountActionConfig();
+export async function POST(request: NextRequest) {
+  const config = getAccountActionConfig(undefined, request.nextUrl.origin);
   const state = createOpaqueState();
 
   const body = {

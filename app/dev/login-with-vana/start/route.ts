@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
-    const config = getOidcDemoConfig();
+    const config = getOidcDemoConfig(undefined, request.nextUrl.origin);
     const discovery = await discoverOidc(config.issuer);
     const pkce = createPkcePair();
     const state = createOpaqueValue();

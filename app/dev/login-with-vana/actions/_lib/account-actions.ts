@@ -32,6 +32,7 @@ export type AccountActionConfig = {
 
 export function getAccountActionConfig(
   surface: LoginWithVanaActionSurface = DEV_LOGIN_WITH_VANA_ACTION_SURFACE,
+  appOrigin?: string,
 ): AccountActionConfig {
   return {
     serviceUrl: trimTrailingSlash(
@@ -40,7 +41,7 @@ export function getAccountActionConfig(
     clientId: process.env.VANA_DEMO_OIDC_CLIENT_ID ?? "memory-app-dev",
     redirectUri:
       readSurfaceEnv(surface.actionRedirectUriEnv) ??
-      `${getDemoAppOrigin()}${surface.basePath}`,
+      `${getDemoAppOrigin(appOrigin)}${surface.basePath}`,
   };
 }
 
@@ -160,9 +161,9 @@ function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
 }
 
-function getDemoAppOrigin() {
+function getDemoAppOrigin(appOrigin?: string) {
   return trimTrailingSlash(
-    process.env.VANA_DEMO_APP_ORIGIN ?? "http://localhost:3084",
+    process.env.VANA_DEMO_APP_ORIGIN ?? appOrigin ?? "http://localhost:3084",
   );
 }
 

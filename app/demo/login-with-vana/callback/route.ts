@@ -48,7 +48,10 @@ export async function GET(request: NextRequest) {
       throw new Error("Missing PKCE verifier or nonce cookie");
     }
 
-    const config = getOidcDemoConfig(PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE);
+    const config = getOidcDemoConfig(
+      PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
+      request.nextUrl.origin,
+    );
     const discovery = await discoverOidc(config.issuer);
     const tokens = await exchangeCodeForTokens({
       code,
