@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
     client_id: config.clientId,
     redirect_uri: config.redirectUri,
     action_type: "data.read.chatgpt",
-    execution_mode: "mock",
-    result_mode: "mock",
+    execution_mode: config.executionMode,
+    result_mode: config.resultMode,
     requested_data: {
       connector: "chatgpt-playwright",
       scopes: ["chatgpt.memories", "chatgpt.conversations"],

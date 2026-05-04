@@ -24,10 +24,52 @@ export const PUBLIC_LOGIN_WITH_VANA_ACTION_SURFACE: LoginWithVanaActionSurface =
     actionRedirectUriEnv: "VANA_DEMO_PUBLIC_ACTION_REDIRECT_URI",
   };
 
+/**
+ * Execution / result modes for action requests forwarded to account.vana.org.
+ *
+ * Defaults stay at "mock" so existing demo flows keep working without
+ * config changes. Set VANA_DEMO_ACTION_EXECUTION_MODE / RESULT_MODE on the
+ * Memory App's deployment to switch into real-grant territory:
+ *   - "embedded_wallet_account_hosted" : real grant minted on the user's
+ *     Personal Server via account.vana.org backend (BUI-372).
+ *   - "byo_wallet_client_signed", "delegated_runtime" : reserved.
+ */
+const SUPPORTED_EXECUTION_MODES = [
+  "mock",
+  "embedded_wallet_account_hosted",
+  "byo_wallet_client_signed",
+  "delegated_runtime",
+] as const;
+type AccountActionExecutionMode = (typeof SUPPORTED_EXECUTION_MODES)[number];
+
+const SUPPORTED_RESULT_MODES = ["mock", "encrypted_bundle_reference"] as const;
+type AccountActionResultMode = (typeof SUPPORTED_RESULT_MODES)[number];
+
+function readExecutionMode(): AccountActionExecutionMode {
+  const raw = (process.env.VANA_DEMO_ACTION_EXECUTION_MODE ?? "").trim();
+  if (
+    raw &&
+    (SUPPORTED_EXECUTION_MODES as readonly string[]).includes(raw)
+  ) {
+    return raw as AccountActionExecutionMode;
+  }
+  return "mock";
+}
+
+function readResultMode(): AccountActionResultMode {
+  const raw = (process.env.VANA_DEMO_ACTION_RESULT_MODE ?? "").trim();
+  if (raw && (SUPPORTED_RESULT_MODES as readonly string[]).includes(raw)) {
+    return raw as AccountActionResultMode;
+  }
+  return "mock";
+}
+
 export type AccountActionConfig = {
   serviceUrl: string;
   clientId: string;
   redirectUri: string;
+  executionMode: AccountActionExecutionMode;
+  resultMode: AccountActionResultMode;
 };
 
 export function getAccountActionConfig(
@@ -42,6 +84,8 @@ export function getAccountActionConfig(
     redirectUri:
       readSurfaceEnv(surface.actionRedirectUriEnv) ??
       `${getDemoAppOrigin(appOrigin)}${surface.basePath}`,
+    executionMode: readExecutionMode(),
+    resultMode: readResultMode(),
   };
 }
 
