@@ -90,6 +90,9 @@ type GrantState =
       status: "approved";
       exchangedAt: string;
       result: Record<string, DemoJson>;
+      /** Real PS-fetched ChatGPT memories. null = still fetching, undefined = fetch failed → fall back to mock. */
+      memories?: ChatGptMemoriesExport | null;
+      memoriesError?: string;
     }
   | { status: "denied"; reason: string }
   | { status: "error"; message: string };
@@ -252,10 +255,118 @@ export function MemoryAppLoginDemo() {
       return;
     }
 
+    const exchangedAt = new Date().toISOString();
     setGrantState({
       status: "approved",
-      exchangedAt: new Date().toISOString(),
+      exchangedAt,
       result: json.result,
+      memories: null,
+    });
+    void fetchRealMemories(json.result, exchangedAt);
+  }
+
+  /**
+   * Pull real ChatGPT memories from the user's Personal Server using the
+   * grant minted during the action exchange. Falls back to the mock display
+   * if anything goes wrong — the demo should still render something useful
+   * even if the data path isn't configured.
+   */
+  async function fetchRealMemories(
+    result: Record<string, DemoJson>,
+    exchangedAt: string,
+  ) {
+    const payload = (result?.result_payload ?? null) as
+      | (Record<string, DemoJson> & {
+          grant_id?: string;
+          personal_server?: { serverUrl?: string; server_url?: string };
+        })
+      | null;
+    const grantId =
+      typeof payload?.grant_id === "string" ? payload.grant_id : null;
+    const personalServer = payload?.personal_server ?? null;
+    if (!grantId || !personalServer) {
+      setGrantState({
+        status: "approved",
+        exchangedAt,
+        result,
+        memories: undefined,
+        memoriesError: "Real grant did not include personal_server metadata.",
+      });
+      return;
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(`${DEMO_BASE_PATH}/actions/fetch-data`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          grant_id: grantId,
+          personal_server: personalServer,
+          scope: "chatgpt.memories",
+        }),
+        cache: "no-store",
+      });
+    } catch (error) {
+      setGrantState({
+        status: "approved",
+        exchangedAt,
+        result,
+        memories: undefined,
+        memoriesError:
+          error instanceof Error
+            ? error.message
+            : "Could not reach the data endpoint.",
+      });
+      return;
+    }
+
+    const json = (await response.json().catch(() => null)) as {
+      ok?: boolean;
+      data?: unknown;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !json?.ok) {
+      setGrantState({
+        status: "approved",
+        exchangedAt,
+        result,
+        memories: undefined,
+        memoriesError:
+          json?.error ?? `Personal Server returned ${response.status}`,
+      });
+      return;
+    }
+
+    // PS wraps the file in an envelope `{ scope, collectedAt, data: <body> }`
+    // where <body> is whatever the user POSTed. We accept either the raw body
+    // or the envelope so the demo keeps working if the wire shape changes.
+    const raw = (json.data ?? null) as Record<string, unknown> | null;
+    const envelopeBody =
+      raw && raw.data && typeof raw.data === "object"
+        ? (raw.data as Record<string, unknown>)
+        : raw;
+    const inner =
+      envelopeBody &&
+      Array.isArray((envelopeBody as { memories?: unknown }).memories)
+        ? (envelopeBody as unknown as ChatGptMemoriesExport)
+        : null;
+    if (!inner || !Array.isArray(inner.memories)) {
+      setGrantState({
+        status: "approved",
+        exchangedAt,
+        result,
+        memories: undefined,
+        memoriesError: "Personal Server response did not include memories.",
+      });
+      return;
+    }
+    setGrantState({
+      status: "approved",
+      exchangedAt,
+      result,
+      memories: { memories: inner.memories, total: inner.memories.length },
     });
   }
 
@@ -399,6 +510,15 @@ function RequestFact({ title, value }: { title: string; value: string }) {
 }
 
 function ProfileDraft({ state }: { state: ApprovedGrantState }) {
+  // Three states:
+  //  - state.memories === null  → still loading from PS
+  //  - state.memories === undefined  → fetch failed (or no real grant); fall back to mock
+  //  - state.memories has memories  → show real data
+  const isLoading = state.memories === null;
+  const usingMock = state.memories === undefined;
+  const memoriesExport: ChatGptMemoriesExport = state.memories ?? MOCK_CHATGPT_MEMORIES;
+  const sourceLabel = usingMock ? "ChatGPT memories (sample)" : "ChatGPT memories";
+
   return (
     <section className="grid gap-5 border-2 border-border bg-card p-5 shadow-2 sm:p-7 lg:grid-cols-[0.78fr_1.22fr]">
       <div className="flex flex-col justify-between gap-6">
@@ -407,32 +527,45 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
             Profile draft
           </p>
           <h2 className="mt-2 text-heading font-bold">
-            Imported {MOCK_CHATGPT_MEMORIES.total} ChatGPT memories.
+            {isLoading
+              ? "Loading your ChatGPT memories…"
+              : `Imported ${memoriesExport.total} ChatGPT memories.`}
           </h2>
           <p className="mt-3 text-body text-foreground-dim">
             Memory App turned your ChatGPT saved memories into editable profile
             entries. Review them before using the profile anywhere else.
           </p>
+          {state.memoriesError ? (
+            <p className="mt-3 text-small text-foreground-dim">
+              Could not load real data ({state.memoriesError}). Showing a sample.
+            </p>
+          ) : null}
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <RequestFact title="Source" value="ChatGPT memories" />
+          <RequestFact title="Source" value={sourceLabel} />
           <RequestFact title="Imported" value={formatDate(state.exchangedAt)} />
         </div>
       </div>
 
       <div className="grid gap-3">
-        {MOCK_CHATGPT_MEMORIES.memories.map((memory) => (
-          <article
-            className="border-2 border-border bg-muted p-4"
-            key={memory.id}
-          >
-            <p className="text-body font-semibold">{memory.content}</p>
-            <p className="mt-2 text-fine font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              {formatMemoryType(memory.type)} · saved{" "}
-              {formatShortDate(memory.created_at)}
-            </p>
-          </article>
-        ))}
+        {isLoading ? (
+          <div className="border-2 border-dashed border-border p-4 text-body text-foreground-dim">
+            Fetching your data from the Personal Server…
+          </div>
+        ) : (
+          memoriesExport.memories.map((memory) => (
+            <article
+              className="border-2 border-border bg-muted p-4"
+              key={memory.id}
+            >
+              <p className="text-body font-semibold">{memory.content}</p>
+              <p className="mt-2 text-fine font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                {formatMemoryType(memory.type)} · saved{" "}
+                {formatShortDate(memory.created_at)}
+              </p>
+            </article>
+          ))
+        )}
       </div>
     </section>
   );
