@@ -12,16 +12,16 @@ A personal data vault and permission management app. Vana Connect lets users con
 
 ## Tech Stack
 
-| Layer | Choice |
-|-------|--------|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 4 |
-| State | Zustand 5 (persisted to localStorage) |
-| Visualization | D3-force + Framer Motion |
-| Gestures | @use-gesture/react |
-| Auth / DB | Supabase (SSR) |
-| Deployment | Vercel |
+| Layer         | Choice                                |
+| ------------- | ------------------------------------- |
+| Framework     | Next.js 15 (App Router)               |
+| Language      | TypeScript 5                          |
+| Styling       | Tailwind CSS 4                        |
+| State         | Zustand 5 (persisted to localStorage) |
+| Visualization | D3-force + Framer Motion              |
+| Gestures      | @use-gesture/react                    |
+| Auth / DB     | Supabase (SSR)                        |
+| Deployment    | Vercel                                |
 
 ## Getting Started
 
@@ -114,6 +114,42 @@ npm run lint         # ESLint
 ## Developer Tools
 
 Visit `/dev` in the running app for:
+
+- **Login with Vana** — drive a local OIDC Authorization Code + PKCE flow against the Hydra POC in `vana-connect`
 - **Audit trail** — view all permission approve/deny events
 - **Reset** — wipe all localStorage state and stores
 - **Component preview** — browse UI components in isolation
+
+### Local Login with Vana Fixture
+
+The product demo at `/demo/login-with-vana` shows a clean Memory App flow: sign in with Vana, review ChatGPT access in the account app, and return to Memory App after approval.
+
+The headed fixture at `/dev/login-with-vana` is the internal version with protocol details. Both routes act as a Memory App relying party against the Hydra POC in `~/code/vana-connect`. They prove the public PKCE client flow without putting a `client_secret` in the browser. The action panel drives a real account-service action: it creates the action through a same-origin route, redirects to the account-hosted review page, and exchanges the returned `action_code`. Only the final result payload is mock.
+
+```bash
+cd ~/code/vana-connect/spikes/hydra-v26-poc
+./scripts/up-account.sh
+./scripts/register-memory-app-client.sh
+
+# Account service must be reachable. Defaults below.
+# Override per-environment in .env.local if needed:
+#   VANA_DEMO_ACCOUNT_SERVICE_URL=http://localhost:3000
+#   VANA_DEMO_APP_ORIGIN=http://localhost:3084
+#   VANA_DEMO_ACTION_REDIRECT_URI=http://localhost:3084/dev/login-with-vana
+#   VANA_DEMO_PUBLIC_ACTION_REDIRECT_URI=http://localhost:3084/demo/login-with-vana
+#   VANA_DEMO_OIDC_REDIRECT_URI=http://localhost:3084/dev/login-with-vana/callback
+#   VANA_DEMO_PUBLIC_OIDC_REDIRECT_URI=http://localhost:3084/demo/login-with-vana/callback
+#   VANA_DEMO_OIDC_CLIENT_ID=memory-app-dev
+
+cd ~/code/vana-connect-mobile
+npm run dev
+```
+
+Then open `http://localhost:3084/demo/login-with-vana` for the product demo, or `http://localhost:3084/dev/login-with-vana` for the internal fixture. The mobile app:
+
+1. POSTs to `/<surface>/login-with-vana/actions/create`, which forwards to `${VANA_DEMO_ACCOUNT_SERVICE_URL}/api/account/actions` and stores an opaque `state` in an HTTP-only cookie.
+2. Redirects the browser to the `action_url` returned by the account service.
+3. After the account app redirects back with `?action_code=...&state=...`, the page POSTs to `/<surface>/login-with-vana/actions/exchange`, which validates the state cookie and forwards to `${VANA_DEMO_ACCOUNT_SERVICE_URL}/api/account/actions/exchange`.
+4. The exchange result is rendered and the URL is cleared of `action_code`/`state` to avoid reuse.
+
+Account-service tokens never enter the browser — only the same-origin Next.js routes talk to the account service.

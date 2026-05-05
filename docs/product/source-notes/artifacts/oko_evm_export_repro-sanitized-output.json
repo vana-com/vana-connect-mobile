@@ -1,0 +1,13 @@
+{
+  "oko_commit": "c25214e7c401a7e472d4fdff161fe53dffa56555",
+  "source_function_used_by_export_flow": "crypto/tecdsa/cait_sith_keplr_wasm/wasm/src/keygen.rs:201 cli_combine_shares",
+  "generated_oko_private_key_matches_combined": true,
+  "public_key_from_keygen": "02BB97BB37263D1BC4C011AE11E3595B4F8089FE3E2B2B35FD8B02FD4D308DC456",
+  "client_share_present": true,
+  "server_share_present": true,
+  "address": "0x241591f20Ba35CA7438029Bb5C94C22759110D06",
+  "message": "vana-master-key-v1:bd611787-a34d-4f25-9ae6-80bda622b920",
+  "signature": "e2cd3ea18e4c21f8661bd0ca8242086413d60617b82dd0c16380f693298e024b51a35038f7ff4710c25f834b4537b1eb2e45cfa6d10e28c99161b445b0466b891c",
+  "recovered_address": "0x241591f20Ba35CA7438029Bb5C94C22759110D06",
+  "recovered_matches_address": true
+}
