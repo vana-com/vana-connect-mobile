@@ -83,13 +83,13 @@ export function VanaWebPoc() {
       <section className="rounded-md border border-neutral-200 p-4">
         <h2 className="mb-2 font-medium">Session</h2>
         {session === null ? (
-          <p className="text-neutral-500">Checking session…</p>
+          <p className="text-neutral-500">Checking session...</p>
         ) : session.loggedIn && session.session ? (
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
             <dt className="text-neutral-500">Subject</dt>
             <dd className="font-mono">{session.session.subject}</dd>
             <dt className="text-neutral-500">Issuer</dt>
-            <dd className="font-mono">{session.session.issuer ?? "—"}</dd>
+            <dd className="font-mono">{session.session.issuer ?? "-"}</dd>
           </dl>
         ) : (
           <div className="flex flex-col gap-2">
@@ -131,7 +131,7 @@ export function VanaWebPoc() {
             onClick={handleSeed}
             disabled={seeding}
           >
-            {seeding ? "Seeding…" : "Use ChatGPT demo data"}
+            {seeding ? "Seeding..." : "Use ChatGPT demo data"}
           </button>
           {error && <p className="text-red-600">{error}</p>}
         </div>
@@ -155,7 +155,7 @@ export function VanaWebPoc() {
               className="mt-3 inline-block rounded bg-black px-3 py-1.5 text-white"
               href={builderHref}
             >
-              Open Builder App →
+              Open Builder App
             </a>
           )}
         </section>
