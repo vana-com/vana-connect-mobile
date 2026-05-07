@@ -127,7 +127,14 @@ The product demo at `/demo/login-with-vana` shows a clean Memory App flow: sign 
 
 For the DPv2 POC integration contract (what is fake vs real, request/response shapes, and replacement points for the real backend), see [`docs/dpv2-poc-integration.md`](docs/dpv2-poc-integration.md).
 
-The DPv2 POC starts one step earlier at `/demo/login-with-vana/vana-web`: Vana Web seeds instant ChatGPT fixture data into the fake Personal Server boundary, then hands the signed fixture handle to the Memory App flow. This lets testers exercise the user-facing path without waiting for ChatGPT scraping, real PS Lite, Vana Storage, or Data Portability RPC integration.
+The DPv2 POC starts one step earlier at `/demo/login-with-vana/vana-web`: Vana Web mints a `fixtureRef` (an opaque pointer to a hardcoded fixture scenario) and hands it to the Memory App flow. The Memory App backend passes it to a same-origin fake Personal Server route, which uses it to select hardcoded ChatGPT memories from `lib/dpv2-poc/fixtures.ts`. This lets testers exercise the user-facing path without waiting for ChatGPT scraping, real PS Lite, Vana Storage, or Data Portability RPC integration.
+
+### How to explain this
+
+- **Permanent (real DPv2 shape):** Account action approval returns `{ grantId, psUrl, scopes }`. The Builder backend calls the user's real Personal Server at `psUrl`. The PS enforces grant validity, payment, and scope.
+- **Temporary (POC scaffolding):** Vana Web creates a `fixtureRef` and the Memory App calls a same-origin fake PS at `GET /v1/data/[scope]` in this repo, which uses the `fixtureRef` to pick hardcoded fixture data. `fixtureRef` is *not* a signed capability, proof, or storage pointer — it is a scenario selector for the fake PS and goes away with the rest of the POC scaffolding.
+
+Availability model: the fake PS is always available with this Next deployment. The real PS Lite/full lifecycle is not modeled here, so the Builder flow still needs to preserve `ps_unavailable` handling when the replacement PS is not active or reachable.
 
 The headed fixture at `/dev/login-with-vana` is the internal version with protocol details. Both routes act as a Memory App relying party against the Hydra POC in `~/code/vana-connect`. They prove the public PKCE client flow without putting a `client_secret` in the browser. The action panel drives a real account-service action: it creates the action through a same-origin route, redirects to the account-hosted review page, and exchanges the returned `action_code`. Only the final result payload is mock.
 
@@ -147,7 +154,6 @@ cd ~/code/vana-connect/spikes/hydra-v26-poc
 #   VANA_DEMO_OIDC_CLIENT_ID=memory-app-dev
 #   MEMORY_APP_GRANTEE_PRIVATE_KEY=0x...
 #   MEMORY_APP_ALLOWED_PS_ORIGINS=http://localhost:3084
-#   DPV2_POC_HANDLE_SECRET=dev-secret
 
 cd ~/code/vana-connect-mobile
 npm run dev
@@ -159,12 +165,12 @@ DPv2 POC human test:
 
 1. Sign in from the Vana Web POC page if needed. The page returns to Vana Web after OAuth.
 2. Click **Use ChatGPT demo data**.
-3. Confirm the page shows `Seeded`, `chatgpt.memories`, an owner subject, a handle expiry, and a PS URL.
+3. Confirm the page shows `Seeded`, `chatgpt.memories`, an owner subject, a `fixtureRef`, and a PS URL.
 4. Click **Open Builder App**.
 5. In Memory App, request/import ChatGPT data and approve the account-hosted action.
-6. Confirm Memory App renders four ChatGPT memory entries from the fake PS boundary, not the sample fallback.
+6. Confirm Memory App renders four ChatGPT memory entries from the fake PS route, not the sample fallback.
 
-The seeded fixture supports `happy_path`, `empty`, `expired`, and `revoked` scenarios from the Vana Web page. The failure scenarios should surface typed fake-PS failures such as `invalid_demo_data_handle` or `grant_revoked`.
+The fake PS supports `happy_path`, `empty`, `invalid_ref`, and `revoked` scenarios from the Vana Web page. The failure scenarios should surface typed fake-PS failures such as `invalid_fixture_ref` or `grant_revoked`.
 
 The mobile app:
 
