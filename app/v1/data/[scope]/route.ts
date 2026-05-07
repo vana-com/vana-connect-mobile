@@ -10,7 +10,7 @@ import {
   type ChatGptMemoriesEnvelope,
   getChatGptFixtureEnvelope,
 } from "@/lib/dpv2-poc/fixtures";
-import { verifyDemoDataHandle } from "@/lib/dpv2-poc/handle";
+import { decodeFixtureRef } from "@/lib/dpv2-poc/fixture-ref";
 
 function fail(
   error: Dpv2PocTypedError,
@@ -36,11 +36,11 @@ export async function GET(
     );
   }
 
-  const handle = request.headers.get("x-dpv2-demo-data-handle");
-  if (!handle) {
+  const fixtureRef = request.headers.get("x-dpv2-fixture-ref");
+  if (!fixtureRef) {
     return fail(
-      "invalid_demo_data_handle",
-      "Missing x-dpv2-demo-data-handle header",
+      "invalid_fixture_ref",
+      "Missing x-dpv2-fixture-ref header",
       401,
     );
   }
@@ -49,28 +49,21 @@ export async function GET(
     return fail("scope_not_allowed", `Unsupported scope: ${scope}`, 403);
   }
 
-  const verified = verifyDemoDataHandle(handle);
-  if (!verified.ok) {
-    if (verified.error === "expired") {
-      return fail(
-        "invalid_demo_data_handle",
-        "Demo data handle expired",
-        401,
-      );
-    }
+  const decoded = decodeFixtureRef(fixtureRef);
+  if (!decoded.ok) {
     return fail(
-      "invalid_demo_data_handle",
-      `Invalid demo data handle: ${verified.error}`,
+      "invalid_fixture_ref",
+      `Invalid fixture ref: ${decoded.error}`,
       401,
     );
   }
 
-  const payload = verified.payload;
+  const payload = decoded.payload;
 
-  if (payload.scenario === "expired") {
+  if (payload.scenario === "invalid_ref") {
     return fail(
-      "invalid_demo_data_handle",
-      "Demo data handle expired",
+      "invalid_fixture_ref",
+      "Fixture ref marked invalid by scenario",
       401,
     );
   }
@@ -82,7 +75,7 @@ export async function GET(
   if (payload.scope !== scope) {
     return fail(
       "scope_not_allowed",
-      `Handle scope ${payload.scope} does not match request scope ${scope}`,
+      `Fixture ref scope ${payload.scope} does not match request scope ${scope}`,
       403,
     );
   }

@@ -1,10 +1,14 @@
 export const DPV2_POC_DATASET = "chatgpt-demo" as const;
-export const DPV2_POC_HANDLE_VERSION = 1 as const;
+export const DPV2_POC_FIXTURE_REF_VERSION = 1 as const;
 export const DPV2_POC_DEFAULT_SCOPE = "chatgpt.memories" as const;
 
 export type Dpv2PocScope = "chatgpt.memories" | "chatgpt.conversations";
 
-export type Dpv2PocScenario = "happy_path" | "empty" | "expired" | "revoked";
+export type Dpv2PocScenario =
+  | "happy_path"
+  | "empty"
+  | "invalid_ref"
+  | "revoked";
 
 export type Dpv2PocTypedError =
   | "ps_unavailable"
@@ -13,16 +17,15 @@ export type Dpv2PocTypedError =
   | "fee_required"
   | "grant_invalid"
   | "scope_not_allowed"
-  | "invalid_demo_data_handle";
+  | "invalid_fixture_ref";
 
-export type Dpv2DemoDataHandlePayload = {
-  version: typeof DPV2_POC_HANDLE_VERSION;
+export type Dpv2FixtureRefPayload = {
+  version: typeof DPV2_POC_FIXTURE_REF_VERSION;
   dataset: typeof DPV2_POC_DATASET;
   scope: Dpv2PocScope;
   ownerSub: string;
   scenario: Dpv2PocScenario;
-  issuedAt: string;
-  expiresAt: string;
+  createdAt: string;
   nonce: string;
 };
 
@@ -36,8 +39,8 @@ export type Dpv2PsIngressResponse = {
   psUrl: string;
   scope: Dpv2PocScope;
   ownerSub: string;
-  demoDataHandle: string;
-  handlePayload: Dpv2DemoDataHandlePayload;
+  fixtureRef: string;
+  fixturePayload: Dpv2FixtureRefPayload;
 };
 
 export type Dpv2PaymentReceipt = {
@@ -54,7 +57,7 @@ export type Dpv2BuilderFetchRequest = {
   grantId: string;
   psUrl: string;
   scope: Dpv2PocScope;
-  demoDataHandle: string;
+  fixtureRef: string;
   requestId?: string;
   paymentReceipt?: Dpv2PaymentReceipt;
 };
@@ -62,7 +65,7 @@ export type Dpv2BuilderFetchRequest = {
 export type Dpv2PsReadRequest = {
   grantId: string;
   scope: Dpv2PocScope;
-  demoDataHandle: string;
+  fixtureRef: string;
   requestId: string;
   paymentReceipt?: Dpv2PaymentReceipt;
 };
@@ -101,4 +104,3 @@ export type Dpv2NormalizedActionExchange = {
 export function isDpv2PocScope(value: unknown): value is Dpv2PocScope {
   return value === "chatgpt.memories" || value === "chatgpt.conversations";
 }
-

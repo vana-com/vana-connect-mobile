@@ -6,14 +6,14 @@ import {
   isDpv2PocScope,
 } from "@/lib/dpv2-poc/contracts";
 import {
-  buildHandlePayload,
-  signDemoDataHandle,
-} from "@/lib/dpv2-poc/handle";
+  buildFixturePayload,
+  encodeFixtureRef,
+} from "@/lib/dpv2-poc/fixture-ref";
 
 const VALID_SCENARIOS: Dpv2PocScenario[] = [
   "happy_path",
   "empty",
-  "expired",
+  "invalid_ref",
   "revoked",
 ];
 
@@ -50,16 +50,16 @@ export async function POST(
   }
 
   const ownerSub = session.vanaUserId ?? session.subject;
-  const handlePayload = buildHandlePayload({ scope, ownerSub, scenario });
-  const demoDataHandle = signDemoDataHandle(handlePayload);
+  const fixturePayload = buildFixturePayload({ scope, ownerSub, scenario });
+  const fixtureRef = encodeFixtureRef(fixturePayload);
 
   const response: Dpv2PsIngressResponse = {
     ok: true,
     psUrl: request.nextUrl.origin,
     scope,
     ownerSub,
-    demoDataHandle,
-    handlePayload,
+    fixtureRef,
+    fixturePayload,
   };
   return NextResponse.json(response);
 }

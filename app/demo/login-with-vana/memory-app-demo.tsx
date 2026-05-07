@@ -9,19 +9,19 @@ import type {
 import { normalizeActionExchangeResult } from "../../../lib/dpv2-poc/action-exchange";
 
 const DEMO_BASE_PATH = "/demo/login-with-vana";
-const DEMO_DATA_HANDLE_KEY = "dpv2_demo_data_handle";
+const FIXTURE_REF_KEY = "dpv2_fixture_ref";
 
-function readDemoDataHandle(): string | null {
+function readFixtureRef(): string | null {
   try {
-    return window.localStorage.getItem(DEMO_DATA_HANDLE_KEY);
+    return window.localStorage.getItem(FIXTURE_REF_KEY);
   } catch {
     return null;
   }
 }
 
-function writeDemoDataHandle(handle: string) {
+function writeFixtureRef(ref: string) {
   try {
-    window.localStorage.setItem(DEMO_DATA_HANDLE_KEY, handle);
+    window.localStorage.setItem(FIXTURE_REF_KEY, ref);
   } catch {
     // ignore
   }
@@ -122,7 +122,7 @@ export function MemoryAppLoginDemo() {
     useState<SessionResponse | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [grantState, setGrantState] = useState<GrantState>({ status: "idle" });
-  const [demoDataHandle, setDemoDataHandle] = useState<string | null>(null);
+  const [fixtureRef, setFixtureRef] = useState<string | null>(null);
   const exchangeAttempted = useRef(false);
   const postLoginImportAttempted = useRef(false);
 
@@ -137,13 +137,13 @@ export function MemoryAppLoginDemo() {
       const actionCode = params.get("action_code");
       const returnedState = params.get("state");
       const actionError = params.get("action_error");
-      const incomingHandle = params.get("demo_data_handle");
+      const incomingRef = params.get("fixture_ref");
 
-      if (incomingHandle) {
-        writeDemoDataHandle(incomingHandle);
-        stripDemoHandleParam();
+      if (incomingRef) {
+        writeFixtureRef(incomingRef);
+        stripFixtureRefParam();
       }
-      setDemoDataHandle(readDemoDataHandle());
+      setFixtureRef(readFixtureRef());
 
       if (error) setStatusMessage(`Sign-in error: ${error}`);
       if (login === "success") setStatusMessage("You're signed in.");
@@ -301,9 +301,9 @@ export function MemoryAppLoginDemo() {
     result: Record<string, DemoJson>,
     exchangedAt: string,
   ) {
-    const demoDataHandle = readDemoDataHandle();
+    const fixtureRef = readFixtureRef();
     const normalized = normalizeActionExchangeResult(result, {
-      demoPsUrl: demoDataHandle ? window.location.origin : undefined,
+      demoPsUrl: fixtureRef ? window.location.origin : undefined,
     });
     if (!normalized.ok) {
       setGrantState({
@@ -327,7 +327,7 @@ export function MemoryAppLoginDemo() {
           grant_id: grantId,
           personal_server: personalServer,
           scope: "chatgpt.memories",
-          ...(demoDataHandle ? { demo_data_handle: demoDataHandle } : {}),
+          ...(fixtureRef ? { fixture_ref: fixtureRef } : {}),
         }),
         cache: "no-store",
       });
@@ -452,9 +452,9 @@ export function MemoryAppLoginDemo() {
           </div>
         </header>
 
-        {demoDataHandle && (
+        {fixtureRef && (
           <p className="border-2 border-dashed border-border bg-muted px-4 py-2 text-fine font-mono text-muted-foreground">
-            demo_data_handle: {demoDataHandle}
+            fixture_ref (temporary POC): {fixtureRef}
           </p>
         )}
 
@@ -527,9 +527,9 @@ function stripGrantParams() {
   window.history.replaceState({}, "", url.toString());
 }
 
-function stripDemoHandleParam() {
+function stripFixtureRefParam() {
   const url = new URL(window.location.href);
-  url.searchParams.delete("demo_data_handle");
+  url.searchParams.delete("fixture_ref");
   window.history.replaceState({}, "", url.toString());
 }
 

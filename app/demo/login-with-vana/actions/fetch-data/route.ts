@@ -25,7 +25,7 @@ type FetchDataBody = {
   grant_id?: unknown;
   personal_server?: unknown;
   scope?: unknown;
-  demo_data_handle?: unknown;
+  fixture_ref?: unknown;
 };
 
 function asString(v: unknown): string | null {
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
   const grantId = asString(body.grant_id);
   const ps = asObject(body.personal_server);
   const scope = asString(body.scope);
-  const demoDataHandle = asString(body.demo_data_handle);
-  const serverUrl = demoDataHandle
+  const fixtureRef = asString(body.fixture_ref);
+  const serverUrl = fixtureRef
     ? request.nextUrl.origin
     : ps
       ? asString(ps.serverUrl) ?? asString(ps.server_url)
@@ -126,8 +126,8 @@ export async function POST(request: NextRequest) {
       headers: {
         Authorization: header,
         "x-dpv2-grant-id": grantId,
-        ...(demoDataHandle
-          ? { "x-dpv2-demo-data-handle": demoDataHandle }
+        ...(fixtureRef
+          ? { "x-dpv2-fixture-ref": fixtureRef }
           : {}),
       },
       cache: "no-store",

@@ -73,18 +73,18 @@ async function seed(scenario) {
     `/demo/login-with-vana/ps-seed/${SCOPE}`,
     { scenario },
   );
-  if (r.status !== 200 || !r.body?.demoDataHandle) {
+  if (r.status !== 200 || !r.body?.fixtureRef) {
     throw new Error(`seed ${scenario} failed: ${r.status} ${JSON.stringify(r.body)}`);
   }
-  return r.body.demoDataHandle;
+  return r.body.fixtureRef;
 }
 
-async function getPs(handle) {
+async function getPs(ref) {
   const res = await fetch(`${BASE_URL}/v1/data/${SCOPE}`, {
     method: "GET",
     headers: {
       authorization: "Web3Signed smoke",
-      "x-dpv2-demo-data-handle": handle,
+      "x-dpv2-fixture-ref": ref,
       "x-dpv2-grant-id": "smoke-grant",
     },
   });
@@ -98,16 +98,16 @@ async function main() {
   console.log(`DPv2 smoke harness against ${BASE_URL}`);
 
   step("Seed happy_path");
-  const happyHandle = await seed("happy_path");
-  pass(`got demoDataHandle (len=${happyHandle.length})`);
+  const happyRef = await seed("happy_path");
+  pass(`got fixtureRef (len=${happyRef.length})`);
 
-  step("Builder fetch-data happy path with example.com PS URL + handle");
+  step("Builder fetch-data happy path with example.com PS URL + fixture_ref");
   {
     const r = await postJson("/demo/login-with-vana/actions/fetch-data", {
       grant_id: "smoke-grant",
       personal_server: { serverUrl: "https://example.com" },
       scope: SCOPE,
-      demo_data_handle: happyHandle,
+      fixture_ref: happyRef,
     });
     if (r.status !== 200) fail(`expected 200, got ${r.status}: ${JSON.stringify(r.body)}`);
     else pass(`status 200`);
@@ -118,7 +118,7 @@ async function main() {
     else pass(`4 memories returned`);
   }
 
-  step("Builder fetch-data without handle + example.com PS URL -> 400 not allowed");
+  step("Builder fetch-data without fixture_ref + example.com PS URL -> 400 not allowed");
   {
     const r = await postJson("/demo/login-with-vana/actions/fetch-data", {
       grant_id: "smoke-grant",
@@ -133,24 +133,24 @@ async function main() {
     } else pass(`error message matches`);
   }
 
-  step("Direct PS read with revoked handle -> grant_revoked");
+  step("Direct PS read with revoked fixture_ref -> grant_revoked");
   {
-    const handle = await seed("revoked");
-    const r = await getPs(handle);
+    const ref = await seed("revoked");
+    const r = await getPs(ref);
     if (r.status !== 403) fail(`expected 403, got ${r.status}: ${JSON.stringify(r.body)}`);
     else pass(`status 403`);
     if (r.body?.error !== "grant_revoked") fail(`expected error grant_revoked, got: ${r.body?.error}`);
     else pass(`error grant_revoked`);
   }
 
-  step("Direct PS read with expired handle -> invalid_demo_data_handle");
+  step("Direct PS read with invalid_ref fixture_ref -> invalid_fixture_ref");
   {
-    const handle = await seed("expired");
-    const r = await getPs(handle);
+    const ref = await seed("invalid_ref");
+    const r = await getPs(ref);
     if (r.status !== 401) fail(`expected 401, got ${r.status}: ${JSON.stringify(r.body)}`);
     else pass(`status 401`);
-    if (r.body?.error !== "invalid_demo_data_handle") fail(`expected error invalid_demo_data_handle, got: ${r.body?.error}`);
-    else pass(`error invalid_demo_data_handle`);
+    if (r.body?.error !== "invalid_fixture_ref") fail(`expected error invalid_fixture_ref, got: ${r.body?.error}`);
+    else pass(`error invalid_fixture_ref`);
   }
 
   console.log("");

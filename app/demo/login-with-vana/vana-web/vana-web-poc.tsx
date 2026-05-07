@@ -15,7 +15,7 @@ type SessionResponse = {
 const SCENARIOS: Dpv2PocScenario[] = [
   "happy_path",
   "empty",
-  "expired",
+  "invalid_ref",
   "revoked",
 ];
 
@@ -67,7 +67,7 @@ export function VanaWebPoc() {
   }
 
   const builderHref = seed
-    ? `/demo/login-with-vana?demo_data_handle=${encodeURIComponent(seed.demoDataHandle)}`
+    ? `/demo/login-with-vana?fixture_ref=${encodeURIComponent(seed.fixtureRef)}`
     : null;
 
   return (
@@ -142,10 +142,12 @@ export function VanaWebPoc() {
             <dd className="font-mono">{seed.scope}</dd>
             <dt className="text-neutral-500">Owner subject</dt>
             <dd className="font-mono">{seed.ownerSub}</dd>
-            <dt className="text-neutral-500">Handle expires</dt>
-            <dd className="font-mono">{seed.handlePayload.expiresAt}</dd>
+            <dt className="text-neutral-500">Fixture scenario</dt>
+            <dd className="font-mono">{seed.fixturePayload.scenario}</dd>
             <dt className="text-neutral-500">PS URL</dt>
             <dd className="font-mono break-all">{seed.psUrl}</dd>
+            <dt className="text-neutral-500">Fixture ref (temporary POC)</dt>
+            <dd className="font-mono break-all">{seed.fixtureRef}</dd>
           </dl>
           {builderHref && (
             <a
