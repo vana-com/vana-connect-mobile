@@ -368,14 +368,17 @@ export function MemoryAppLoginDemo() {
       return;
     }
 
-    // PS wraps the file in an envelope `{ scope, collectedAt, data: <body> }`
-    // where <body> is whatever the user POSTed. We accept either the raw body
-    // or the envelope so the demo keeps working if the wire shape changes.
+    // Accept both the old raw PS envelope and the DPv2 read wrapper:
+    // `{ ok, data: { scope, collectedAt, data: <body> } }`.
     const raw = (json.data ?? null) as Record<string, unknown> | null;
-    const envelopeBody =
-      raw && raw.data && typeof raw.data === "object"
+    const psData =
+      raw && raw.ok === true && raw.data && typeof raw.data === "object"
         ? (raw.data as Record<string, unknown>)
         : raw;
+    const envelopeBody =
+      psData && psData.data && typeof psData.data === "object"
+        ? (psData.data as Record<string, unknown>)
+        : psData;
     const inner =
       envelopeBody &&
       Array.isArray((envelopeBody as { memories?: unknown }).memories)
@@ -395,7 +398,11 @@ export function MemoryAppLoginDemo() {
       status: "approved",
       exchangedAt,
       result,
-      memories: { memories: inner.memories, total: inner.memories.length },
+      memories: {
+        memories: inner.memories,
+        total:
+          typeof inner.total === "number" ? inner.total : inner.memories.length,
+      },
     });
   }
 

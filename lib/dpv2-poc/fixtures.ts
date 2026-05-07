@@ -2,8 +2,10 @@ import type { Dpv2PocScenario, Dpv2PocScope } from "./contracts";
 
 export type ChatGptMemory = {
   id: string;
-  text: string;
-  createdAt: string;
+  content: string;
+  created_at: string;
+  updated_at?: string;
+  type?: string;
 };
 
 export type ChatGptMemoriesEnvelope = {
@@ -18,23 +20,28 @@ export type ChatGptMemoriesEnvelope = {
 const HAPPY_PATH_MEMORIES: ChatGptMemory[] = [
   {
     id: "mem_001",
-    text: "Prefers concise, technical writing without filler.",
-    createdAt: "2026-02-04T15:21:00.000Z",
+    content: "Prefers concise, technical writing without filler.",
+    created_at: "2026-02-04T15:21:00.000Z",
+    type: "preference",
   },
   {
     id: "mem_002",
-    text: "Working on Vana DPv2 POC: Personal Server boundary and Builder App read flow.",
-    createdAt: "2026-03-12T09:45:00.000Z",
+    content:
+      "Working on Vana DPv2 POC: Personal Server boundary and Builder App read flow.",
+    created_at: "2026-03-12T09:45:00.000Z",
+    type: "project",
   },
   {
     id: "mem_003",
-    text: "Lives in NYC; uses Next.js App Router for most demo apps.",
-    createdAt: "2026-04-02T18:02:00.000Z",
+    content: "Uses Next.js App Router for most demo apps.",
+    created_at: "2026-04-02T18:02:00.000Z",
+    type: "working_style",
   },
   {
     id: "mem_004",
-    text: "Likes prior-art research before designing new UI components.",
-    createdAt: "2026-04-19T11:30:00.000Z",
+    content: "Likes prior-art research before designing new UI components.",
+    created_at: "2026-04-19T11:30:00.000Z",
+    type: "preference",
   },
 ];
 

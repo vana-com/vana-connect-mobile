@@ -105,6 +105,7 @@ export async function POST(request: NextRequest) {
       method: "GET",
       headers: {
         Authorization: header,
+        "x-dpv2-grant-id": grantId,
         ...(demoDataHandle
           ? { "x-dpv2-demo-data-handle": demoDataHandle }
           : {}),
