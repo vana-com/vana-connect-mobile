@@ -66,6 +66,13 @@ export function VanaWebPoc() {
     }
   }
 
+  async function handleLogout() {
+    await fetch("/demo/login-with-vana/logout", { method: "POST" });
+    setSession({ loggedIn: false, session: null });
+    setSeed(null);
+    setError(null);
+  }
+
   const builderHref = seed
     ? `/demo/login-with-vana?fixture_ref=${encodeURIComponent(seed.fixtureRef)}`
     : null;
@@ -85,12 +92,21 @@ export function VanaWebPoc() {
         {session === null ? (
           <p className="text-neutral-500">Checking session...</p>
         ) : session.loggedIn && session.session ? (
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-            <dt className="text-neutral-500">Subject</dt>
-            <dd className="font-mono">{session.session.subject}</dd>
-            <dt className="text-neutral-500">Issuer</dt>
-            <dd className="font-mono">{session.session.issuer ?? "-"}</dd>
-          </dl>
+          <div className="flex flex-col gap-3">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+              <dt className="text-neutral-500">Subject</dt>
+              <dd className="font-mono">{session.session.subject}</dd>
+              <dt className="text-neutral-500">Issuer</dt>
+              <dd className="font-mono">{session.session.issuer ?? "-"}</dd>
+            </dl>
+            <button
+              type="button"
+              className="w-fit rounded border border-neutral-300 px-3 py-1.5 text-neutral-800"
+              onClick={handleLogout}
+            >
+              Clear demo session
+            </button>
+          </div>
         ) : (
           <div className="flex flex-col gap-2">
             <p>Not signed in.</p>
