@@ -143,6 +143,22 @@ async function main() {
     else pass(`error grant_revoked`);
   }
 
+  step("Builder fetch-data with revoked fixture_ref -> grant_revoked details");
+  {
+    const ref = await seed("revoked");
+    const r = await postJson("/demo/login-with-vana/actions/fetch-data", {
+      grant_id: "smoke-grant",
+      personal_server: { serverUrl: "https://example.com" },
+      scope: SCOPE,
+      fixture_ref: ref,
+    });
+    if (r.status !== 403) fail(`expected 403, got ${r.status}: ${JSON.stringify(r.body)}`);
+    else pass(`status 403`);
+    if (r.body?.details?.error !== "grant_revoked") {
+      fail(`expected details.error grant_revoked, got: ${r.body?.details?.error}`);
+    } else pass(`details.error grant_revoked`);
+  }
+
   step("Direct PS read with malformed fixture_ref -> invalid_fixture_ref");
   {
     const r = await getPs("not-a-fixture-ref");

@@ -164,11 +164,11 @@ Then open `http://localhost:3084/demo/login-with-vana/vana-web` for the DPv2 POC
 DPv2 POC human test:
 
 1. Sign in from the Vana Web POC page if needed. The page returns to Vana Web after OAuth.
-2. Click **Use ChatGPT demo data**.
-3. Confirm the page shows `Seeded`, `chatgpt.memories`, an owner subject, a `fixtureRef`, and a PS URL.
-4. Click **Open Builder App**.
+2. Click **Connect ChatGPT demo data**.
+3. Confirm the page shows `Personal Server (POC)`, `chatgpt.memories`, an owner subject, a `fixtureRef`, and a PS URL.
+4. Click **Open Builder App to request this data**.
 5. In Memory App, request/import ChatGPT data and approve the account-hosted action.
-6. Confirm Memory App renders four ChatGPT memory entries from the fake PS route, not the sample fallback.
+6. Confirm Memory App renders four ChatGPT memory entries from the fake PS route. If you selected `Grant revoked`, confirm Memory App shows an access-revoked state and imports nothing.
 
 The Vana Web page exposes product-relevant test outcomes for `happy_path`, `empty`, and `revoked`. The smoke harness also checks malformed fixture refs directly so invalid-ref plumbing stays covered without exposing that implementation detail in the UI.
 

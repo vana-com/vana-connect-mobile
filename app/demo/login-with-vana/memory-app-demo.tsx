@@ -40,58 +40,10 @@ type ChatGptMemoriesExport = {
   total: number;
 };
 
-const MOCK_CHATGPT_MEMORIES: ChatGptMemoriesExport = {
-  total: 6,
-  memories: [
-    {
-      id: "mem_demo_001",
-      content:
-        "You prefer concise, direct status updates with clear next steps.",
-      created_at: "2026-04-02T15:24:00.000Z",
-      updated_at: "2026-04-29T19:04:00.000Z",
-      type: "preference",
-    },
-    {
-      id: "mem_demo_002",
-      content:
-        "You are working on account access, data grants, and Login with Vana flows.",
-      created_at: "2026-04-08T18:12:00.000Z",
-      updated_at: "2026-04-29T21:11:00.000Z",
-      type: "project",
-    },
-    {
-      id: "mem_demo_003",
-      content:
-        "You want demo apps to focus on the client product value before explaining auth or provider details.",
-      created_at: "2026-04-18T14:36:00.000Z",
-      updated_at: "2026-04-29T20:31:00.000Z",
-      type: "preference",
-    },
-    {
-      id: "mem_demo_004",
-      content:
-        "You prefer realistic flows that use real grants while mocking unfinished RPC dependencies.",
-      created_at: "2026-04-21T16:50:00.000Z",
-      updated_at: "2026-04-29T18:47:00.000Z",
-      type: "preference",
-    },
-    {
-      id: "mem_demo_005",
-      content:
-        "You care about copy that feels product-owned and avoids internal implementation language.",
-      created_at: "2026-04-26T13:08:00.000Z",
-      updated_at: "2026-04-29T19:42:00.000Z",
-      type: "preference",
-    },
-    {
-      id: "mem_demo_006",
-      content:
-        "You expect important UI changes to be tested through the full browser journey.",
-      created_at: "2026-04-27T17:19:00.000Z",
-      updated_at: "2026-04-29T20:06:00.000Z",
-      type: "working_style",
-    },
-  ],
+type MemoryAccessFailure = {
+  title: string;
+  message: string;
+  code?: string;
 };
 
 type SessionResponse = {
@@ -108,9 +60,9 @@ type GrantState =
       status: "approved";
       exchangedAt: string;
       result: Record<string, DemoJson>;
-      /** Real PS-fetched ChatGPT memories. null = still fetching, undefined = fetch failed → fall back to mock. */
+      /** Real PS-fetched ChatGPT memories. null = still fetching, undefined = fetch failed/refused. */
       memories?: ChatGptMemoriesExport | null;
-      memoriesError?: string;
+      memoriesFailure?: MemoryAccessFailure;
     }
   | { status: "denied"; reason: string }
   | { status: "error"; message: string };
@@ -311,7 +263,10 @@ export function MemoryAppLoginDemo() {
         exchangedAt,
         result,
         memories: undefined,
-        memoriesError: normalized.error,
+        memoriesFailure: {
+          title: "Personal Server details are missing",
+          message: normalized.error,
+        },
       });
       return;
     }
@@ -332,15 +287,19 @@ export function MemoryAppLoginDemo() {
         cache: "no-store",
       });
     } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Could not reach the data endpoint.";
       setGrantState({
         status: "approved",
         exchangedAt,
         result,
         memories: undefined,
-        memoriesError:
-          error instanceof Error
-            ? error.message
-            : "Could not reach the data endpoint.",
+        memoriesFailure: {
+          title: "Personal Server unavailable",
+          message,
+        },
       });
       return;
     }
@@ -349,6 +308,7 @@ export function MemoryAppLoginDemo() {
       ok?: boolean;
       data?: unknown;
       error?: string;
+      details?: unknown;
     } | null;
 
     if (!response.ok || !json?.ok) {
@@ -357,8 +317,7 @@ export function MemoryAppLoginDemo() {
         exchangedAt,
         result,
         memories: undefined,
-        memoriesError:
-          json?.error ?? `Personal Server returned ${response.status}`,
+        memoriesFailure: buildMemoryAccessFailure(json, response.status),
       });
       return;
     }
@@ -385,7 +344,11 @@ export function MemoryAppLoginDemo() {
         exchangedAt,
         result,
         memories: undefined,
-        memoriesError: "Personal Server response did not include memories.",
+        memoriesFailure: {
+          title: "Unexpected Personal Server response",
+          message:
+            "The Personal Server response did not include ChatGPT memories.",
+        },
       });
       return;
     }
@@ -519,6 +482,60 @@ export function MemoryAppLoginDemo() {
   );
 }
 
+function readObject(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function readString(value: unknown): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function buildMemoryAccessFailure(
+  json: { error?: string; details?: unknown } | null,
+  status: number,
+): MemoryAccessFailure {
+  const details = readObject(json?.details);
+  const code = readString(details?.error);
+  const detailMessage = readString(details?.message);
+  const fallbackMessage =
+    detailMessage ?? json?.error ?? `Personal Server returned ${status}`;
+
+  if (code === "grant_revoked") {
+    return {
+      title: "Access revoked",
+      message:
+        "The Personal Server refused this read because access was revoked. No ChatGPT memories were imported.",
+      code,
+    };
+  }
+
+  if (code === "fee_required") {
+    return {
+      title: "Payment required",
+      message:
+        "The Personal Server requires payment before releasing this data. No ChatGPT memories were imported.",
+      code,
+    };
+  }
+
+  if (code === "ps_unavailable") {
+    return {
+      title: "Personal Server unavailable",
+      message:
+        "The Personal Server is not reachable right now. No ChatGPT memories were imported.",
+      code,
+    };
+  }
+
+  return {
+    title: "Personal Server refused the read",
+    message: `${fallbackMessage} No ChatGPT memories were imported.`,
+    code: code ?? undefined,
+  };
+}
+
 function stripGrantParams() {
   const url = new URL(window.location.href);
   for (const key of ["action_code", "state", "action_error"]) {
@@ -553,14 +570,14 @@ function RequestFact({ title, value }: { title: string; value: string }) {
 }
 
 function ProfileDraft({ state }: { state: ApprovedGrantState }) {
-  // Three states:
+  // Four states:
   //  - state.memories === null  → still loading from PS
-  //  - state.memories === undefined  → fetch failed (or no real grant); fall back to mock
+  //  - state.memories === undefined  → fetch failed/refused
+  //  - state.memoriesFailure exists  → explain why nothing was imported
   //  - state.memories has memories  → show real data
   const isLoading = state.memories === null;
-  const usingMock = state.memories === undefined;
-  const memoriesExport: ChatGptMemoriesExport = state.memories ?? MOCK_CHATGPT_MEMORIES;
-  const sourceLabel = usingMock ? "ChatGPT memories (sample)" : "ChatGPT memories";
+  const accessFailure = state.memoriesFailure;
+  const memoriesExport = state.memories;
 
   return (
     <section className="grid gap-5 border-2 border-border bg-card p-5 shadow-2 sm:p-7 lg:grid-cols-[0.78fr_1.22fr]">
@@ -572,21 +589,29 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
           <h2 className="mt-2 text-heading font-bold">
             {isLoading
               ? "Loading your ChatGPT memories…"
-              : `Imported ${memoriesExport.total} ChatGPT memories.`}
+              : accessFailure
+                ? accessFailure.title
+                : `Imported ${memoriesExport?.total ?? 0} ChatGPT memories.`}
           </h2>
           <p className="mt-3 text-body text-foreground-dim">
-            Memory App turned your ChatGPT saved memories into editable profile
-            entries. Review them before using the profile anywhere else.
+            {accessFailure
+              ? accessFailure.message
+              : "Memory App turned your ChatGPT saved memories into editable profile entries. Review them before using the profile anywhere else."}
           </p>
-          {state.memoriesError ? (
-            <p className="mt-3 text-small text-foreground-dim">
-              Could not load real data ({state.memoriesError}). Showing a sample.
-            </p>
-          ) : null}
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <RequestFact title="Source" value={sourceLabel} />
-          <RequestFact title="Imported" value={formatDate(state.exchangedAt)} />
+          <RequestFact
+            title="Source"
+            value={
+              accessFailure
+                ? "Personal Server refused access"
+                : "ChatGPT memories"
+            }
+          />
+          <RequestFact
+            title={accessFailure ? "Result" : "Imported"}
+            value={accessFailure ? "Not imported" : formatDate(state.exchangedAt)}
+          />
         </div>
       </div>
 
@@ -595,7 +620,14 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
           <div className="border-2 border-dashed border-border p-4 text-body text-foreground-dim">
             Fetching your data from the Personal Server…
           </div>
-        ) : (
+        ) : accessFailure ? (
+          <div className="border-2 border-border bg-muted p-4 text-body text-foreground-dim">
+            <p className="font-semibold text-foreground">
+              {accessFailure.code ?? "personal_server_error"}
+            </p>
+            <p className="mt-2">{accessFailure.message}</p>
+          </div>
+        ) : memoriesExport ? (
           memoriesExport.memories.map((memory) => (
             <article
               className="border-2 border-border bg-muted p-4"
@@ -608,6 +640,10 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
               </p>
             </article>
           ))
+        ) : (
+          <div className="border-2 border-border bg-muted p-4 text-body text-foreground-dim">
+            No ChatGPT memories were imported.
+          </div>
         )}
       </div>
     </section>
