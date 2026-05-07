@@ -310,8 +310,9 @@ export function MemoryAppLoginDemo() {
       typeof payload?.grant_id === "string" ? payload.grant_id : null;
     const demoDataHandle = readDemoDataHandle();
     const personalServer =
-      payload?.personal_server ??
-      (demoDataHandle ? { serverUrl: window.location.origin } : null);
+      demoDataHandle
+        ? { serverUrl: window.location.origin }
+        : (payload?.personal_server ?? null);
     if (!grantId || !personalServer) {
       setGrantState({
         status: "approved",

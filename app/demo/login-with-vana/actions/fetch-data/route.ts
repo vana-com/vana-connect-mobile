@@ -62,8 +62,12 @@ export async function POST(request: NextRequest) {
   const grantId = asString(body.grant_id);
   const ps = asObject(body.personal_server);
   const scope = asString(body.scope);
-  const serverUrl = ps ? asString(ps.serverUrl) ?? asString(ps.server_url) : null;
   const demoDataHandle = asString(body.demo_data_handle);
+  const serverUrl = demoDataHandle
+    ? request.nextUrl.origin
+    : ps
+      ? asString(ps.serverUrl) ?? asString(ps.server_url)
+      : null;
 
   if (!grantId || !serverUrl || !scope) {
     return NextResponse.json(
