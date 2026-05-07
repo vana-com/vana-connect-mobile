@@ -124,6 +124,8 @@ Visit `/dev` in the running app for:
 
 The product demo at `/demo/login-with-vana` shows a clean Memory App flow: sign in with Vana, review ChatGPT access in the account app, and return to Memory App after approval.
 
+For the DPv2 POC integration contract (what is fake vs real, request/response shapes, and replacement points for the real backend), see [`docs/dpv2-poc-integration.md`](docs/dpv2-poc-integration.md).
+
 The DPv2 POC starts one step earlier at `/demo/login-with-vana/vana-web`: Vana Web seeds instant ChatGPT fixture data into the fake Personal Server boundary, then hands the signed fixture handle to the Memory App flow. This lets testers exercise the user-facing path without waiting for ChatGPT scraping, real PS Lite, Vana Storage, or Data Portability RPC integration.
 
 The headed fixture at `/dev/login-with-vana` is the internal version with protocol details. Both routes act as a Memory App relying party against the Hydra POC in `~/code/vana-connect`. They prove the public PKCE client flow without putting a `client_secret` in the browser. The action panel drives a real account-service action: it creates the action through a same-origin route, redirects to the account-hosted review page, and exchanges the returned `action_code`. Only the final result payload is mock.
