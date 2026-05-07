@@ -102,4 +102,11 @@ When the real DPv2 backend is online, replace each piece in place. Contracts in 
 
 ## Local smoke command
 
-Pending. A scripted smoke for the seed → exchange → fetch-data round-trip is not yet in this repo; until it lands, drive the flow through the browser at the URL above.
+Run this against a running app server:
+
+```bash
+npm run dev
+BASE_URL=http://localhost:3084 npm run smoke:dpv2
+```
+
+The smoke script creates a fake demo session cookie, seeds `happy_path`, calls the Builder fetch route with `demo_data_handle`, verifies four fixture memories, verifies arbitrary non-demo PS origins are blocked, and checks the `revoked` / `expired` fake PS error paths.

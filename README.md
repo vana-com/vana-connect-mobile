@@ -109,6 +109,7 @@ npm run dev          # Start dev server on :3084
 npm run build        # Production build
 npm run typecheck    # TypeScript check
 npm run lint         # ESLint
+npm run smoke:dpv2   # HTTP smoke for the DPv2 POC flow; requires a running app
 ```
 
 ## Developer Tools
