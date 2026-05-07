@@ -23,28 +23,28 @@ const SCENARIO_OPTIONS: Array<{
     value: "happy_path",
     label: "Data is ready",
     description:
-      "Use this for the main demo: ChatGPT memories are available in the Personal Server and the Builder App can read them after approval.",
-    psStatus: "Ready for Builder App requests",
+      "Use this for the main demo: Memory App receives ChatGPT memories after the user approves access.",
+    psStatus: "Ready for Memory App",
     psDescription:
-      "ChatGPT demo memories are available from the fake Personal Server. In production, this would be the user's real PS Lite or full Personal Server.",
+      "Memory App will receive registered ChatGPT demo memories after approval.",
   },
   {
     value: "empty",
     label: "No ChatGPT memories",
     description:
-      "Use this to check the empty state: the connection exists, but the Personal Server has no memories for this scope.",
-    psStatus: "Connected with no memories",
+      "Use this to check the empty state: Memory App is approved, but there is no ChatGPT memory data to import.",
+    psStatus: "Ready for Memory App, no memories",
     psDescription:
-      "The fake Personal Server is reachable, but it will return an empty ChatGPT memories list.",
+      "Memory App will complete the approved read and show an empty import.",
   },
   {
     value: "revoked",
     label: "Grant revoked",
     description:
-      "Use this to check error handling when the Personal Server refuses a read because access has been revoked.",
+      "Use this to check access handling: the user approves the flow, but the later data read is refused.",
     psStatus: "Access revoked",
     psDescription:
-      "The fake Personal Server is reachable, but it will refuse the Builder App read with grant_revoked.",
+      "Memory App will receive a revoked-access response and import nothing.",
   },
 ];
 
@@ -114,8 +114,8 @@ export function VanaWebPoc() {
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold">Vana Web POC</h1>
         <p className="text-neutral-600">
-          Connect ChatGPT to a Personal Server, then hand off to a Builder App
-          that requests approved access.
+          Set up a ChatGPT data state, then hand off to Memory App to request
+          approved access.
         </p>
       </header>
 
@@ -154,13 +154,12 @@ export function VanaWebPoc() {
 
       <section className="rounded-md border border-neutral-200 p-4">
         <h2 className="mb-3 font-medium">
-          Connect ChatGPT to Personal Server
+          Configure ChatGPT demo data
         </h2>
         <p className="mb-3 max-w-xl text-neutral-600">
-          For the POC, this stands in for the user connecting ChatGPT and having
-          data available inside their Personal Server. It does not scrape
-          ChatGPT or upload anything; it creates a temporary fixture ref so the
-          Builder App can exercise the approval and data-read flow instantly.
+          This POC does not scrape ChatGPT or query a real Personal Server yet.
+          It lets us test the Vana Web, approval, and Memory App read flow while
+          those integrations are still being built.
         </p>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
@@ -197,7 +196,7 @@ export function VanaWebPoc() {
           </button>
           {session && !session.loggedIn && (
             <p className="text-neutral-500">
-              Sign in with Vana before connecting data to the Personal Server.
+              Sign in with Vana before configuring demo data.
             </p>
           )}
           {error && <p className="text-red-600">{error}</p>}
@@ -206,10 +205,10 @@ export function VanaWebPoc() {
 
       {seed && (
         <section className="rounded-md border border-green-300 bg-green-50 p-4">
-          <h2 className="mb-2 font-medium">Personal Server (POC)</h2>
+          <h2 className="mb-2 font-medium">ChatGPT demo data connected</h2>
           <p className="mb-3 max-w-xl text-green-900">
             {selectedScenario?.psDescription ??
-              "The fake Personal Server is configured for this POC run."}
+              "Memory App can now request this demo data after approval."}
           </p>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
             <dt className="text-neutral-500">Status</dt>
@@ -220,11 +219,16 @@ export function VanaWebPoc() {
             <dd className="font-mono">{seed.ownerSub}</dd>
             <dt className="text-neutral-500">Test outcome</dt>
             <dd>{selectedScenario?.label ?? seed.fixturePayload.scenario}</dd>
-            <dt className="text-neutral-500">PS URL</dt>
-            <dd className="font-mono break-all">{seed.psUrl}</dd>
-            <dt className="text-neutral-500">Fixture ref (temporary POC)</dt>
-            <dd className="font-mono break-all">{seed.fixtureRef}</dd>
           </dl>
+          <details className="mt-3 text-xs text-neutral-600">
+            <summary className="cursor-pointer">Debug details</summary>
+            <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+              <dt>temporary read URL</dt>
+              <dd className="font-mono break-all">{seed.psUrl}</dd>
+              <dt>fixture_ref</dt>
+              <dd className="font-mono break-all">{seed.fixtureRef}</dd>
+            </dl>
+          </details>
           {builderHref && (
             <a
               className="mt-3 inline-block rounded bg-black px-3 py-1.5 text-white"

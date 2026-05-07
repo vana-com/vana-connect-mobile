@@ -127,14 +127,14 @@ The product demo at `/demo/login-with-vana` shows a clean Memory App flow: sign 
 
 For the DPv2 POC integration contract (what is fake vs real, request/response shapes, and replacement points for the real backend), see [`docs/dpv2-poc-integration.md`](docs/dpv2-poc-integration.md).
 
-The DPv2 POC starts one step earlier at `/demo/login-with-vana/vana-web`: Vana Web mints a `fixtureRef` (an opaque pointer to a hardcoded fixture scenario) and hands it to the Memory App flow. The Memory App backend passes it to a same-origin fake Personal Server route, which uses it to select hardcoded ChatGPT memories from `lib/dpv2-poc/fixtures.ts`. This lets testers exercise the user-facing path without waiting for ChatGPT scraping, real PS Lite, Vana Storage, or Data Portability RPC integration.
+The DPv2 POC starts one step earlier at `/demo/login-with-vana/vana-web`: Vana Web lets a tester choose the ChatGPT data state for the demo, then sends them to Memory App. Memory App asks the user to approve ChatGPT access in Vana Account, returns to the app, and tries to read that data. Today the ChatGPT data and Personal Server response are temporary fixtures in this repo; the real SDK/RPC inventory, Personal Server or PS Lite, storage, and decryption wiring are still integration points.
 
 ### How to explain this
 
 - **Permanent (real DPv2 shape):** Account action approval returns `{ grantId, psUrl, scopes }`. The Builder backend calls the user's real Personal Server at `psUrl`. The PS enforces grant validity, payment, and scope.
-- **Temporary (POC scaffolding):** Vana Web creates a `fixtureRef` and the Memory App calls a same-origin fake PS at `GET /v1/data/[scope]` in this repo, which uses the `fixtureRef` to pick hardcoded fixture data. `fixtureRef` is *not* a signed capability, proof, or storage pointer — it is a scenario selector for the fake PS and goes away with the rest of the POC scaffolding.
+- **Temporary (POC scaffolding):** Vana Web picks a demo ChatGPT data state. A route in this repo acts like the user's Personal Server for now and returns the selected result. The hidden `fixture_ref` debug value is only a scenario selector for that temporary route; it is *not* a signed capability, proof, or storage pointer.
 
-Availability model: the fake PS is always available with this Next deployment. The real PS Lite/full lifecycle is not modeled here, so the Builder flow still needs to preserve `ps_unavailable` handling when the replacement PS is not active or reachable.
+Availability model: the temporary Personal Server stand-in is available whenever this Next deployment is available. The real PS Lite/full lifecycle is not modeled here, so the Builder flow still needs to preserve `ps_unavailable` handling when the replacement PS is not active or reachable.
 
 The headed fixture at `/dev/login-with-vana` is the internal version with protocol details. Both routes act as a Memory App relying party against the Hydra POC in `~/code/vana-connect`. They prove the public PKCE client flow without putting a `client_secret` in the browser. The action panel drives a real account-service action: it creates the action through a same-origin route, redirects to the account-hosted review page, and exchanges the returned `action_code`. Only the final result payload is mock.
 
@@ -165,10 +165,10 @@ DPv2 POC human test:
 
 1. Sign in from the Vana Web POC page if needed. The page returns to Vana Web after OAuth.
 2. Click **Connect ChatGPT demo data**.
-3. Confirm the page shows `Personal Server (POC)`, `chatgpt.memories`, an owner subject, a `fixtureRef`, and a PS URL.
+3. Confirm the page shows `ChatGPT demo data connected`, `chatgpt.memories`, an owner subject, and the selected test outcome.
 4. Click **Open Builder App to request this data**.
 5. In Memory App, request/import ChatGPT data and approve the account-hosted action.
-6. Confirm Memory App renders four ChatGPT memory entries from the fake PS route. If you selected `Grant revoked`, confirm Memory App shows an access-revoked state and imports nothing.
+6. Confirm Memory App renders four ChatGPT memory entries from the temporary read route. If you selected `Grant revoked`, confirm Memory App shows an access-revoked state and imports nothing.
 
 The Vana Web page exposes product-relevant test outcomes for `happy_path`, `empty`, and `revoked`. The smoke harness also checks malformed fixture refs directly so invalid-ref plumbing stays covered without exposing that implementation detail in the UI.
 

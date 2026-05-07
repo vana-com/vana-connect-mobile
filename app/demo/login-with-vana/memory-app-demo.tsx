@@ -60,7 +60,7 @@ type GrantState =
       status: "approved";
       exchangedAt: string;
       result: Record<string, DemoJson>;
-      /** Real PS-fetched ChatGPT memories. null = still fetching, undefined = fetch failed/refused. */
+      /** PS-fetched ChatGPT memories. null = still fetching, undefined = fetch failed/refused. */
       memories?: ChatGptMemoriesExport | null;
       memoriesFailure?: MemoryAccessFailure;
     }
@@ -244,10 +244,8 @@ export function MemoryAppLoginDemo() {
   }
 
   /**
-   * Pull real ChatGPT memories from the user's Personal Server using the
-   * grant minted during the action exchange. Falls back to the mock display
-   * if anything goes wrong — the demo should still render something useful
-   * even if the data path isn't configured.
+   * Pull ChatGPT memories from the Personal Server endpoint using the grant
+   * minted during the action exchange.
    */
   async function fetchRealMemories(
     result: Record<string, DemoJson>,
@@ -416,9 +414,12 @@ export function MemoryAppLoginDemo() {
         </header>
 
         {fixtureRef && (
-          <p className="border-2 border-dashed border-border bg-muted px-4 py-2 text-fine font-mono text-muted-foreground">
-            fixture_ref (temporary POC): {fixtureRef}
-          </p>
+          <details className="border-2 border-dashed border-border bg-muted px-4 py-2 text-fine text-muted-foreground">
+            <summary className="cursor-pointer font-semibold">
+              POC debug details
+            </summary>
+            <p className="mt-2 font-mono break-all">fixture_ref: {fixtureRef}</p>
+          </details>
         )}
 
         {statusMessage && (
@@ -439,15 +440,12 @@ export function MemoryAppLoginDemo() {
                 Use ChatGPT as the starting point.
               </h2>
               <p className="mt-3 max-w-2xl text-body text-foreground-dim">
-                The import reads your ChatGPT memories and conversation history.
-                You review the request before anything is shared.
+                The import requests ChatGPT memories through Vana. You review
+                the request before anything is shared.
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-3">
                 <RequestFact title="Data source" value="ChatGPT" />
-                <RequestFact
-                  title="Data included"
-                  value="Memories and conversation history"
-                />
+                <RequestFact title="Data included" value="Saved memories" />
                 <RequestFact title="Access lasts" value="Until you revoke it" />
               </div>
 
@@ -574,10 +572,18 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
   //  - state.memories === null  → still loading from PS
   //  - state.memories === undefined  → fetch failed/refused
   //  - state.memoriesFailure exists  → explain why nothing was imported
-  //  - state.memories has memories  → show real data
+  //  - state.memories exists  → show imported data or a clear empty state
   const isLoading = state.memories === null;
   const accessFailure = state.memoriesFailure;
   const memoriesExport = state.memories;
+  const hasMemories =
+    memoriesExport !== null &&
+    memoriesExport !== undefined &&
+    memoriesExport.memories.length > 0;
+  const isEmptyImport =
+    memoriesExport !== null &&
+    memoriesExport !== undefined &&
+    memoriesExport.memories.length === 0;
 
   return (
     <section className="grid gap-5 border-2 border-border bg-card p-5 shadow-2 sm:p-7 lg:grid-cols-[0.78fr_1.22fr]">
@@ -591,11 +597,15 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
               ? "Loading your ChatGPT memories…"
               : accessFailure
                 ? accessFailure.title
-                : `Imported ${memoriesExport?.total ?? 0} ChatGPT memories.`}
+                : isEmptyImport
+                  ? "No ChatGPT memories found."
+                  : `Imported ${memoriesExport?.total ?? 0} ChatGPT memories.`}
           </h2>
           <p className="mt-3 text-body text-foreground-dim">
             {accessFailure
               ? accessFailure.message
+              : isEmptyImport
+                ? "Access worked, but the Personal Server returned an empty ChatGPT memories list."
               : "Memory App turned your ChatGPT saved memories into editable profile entries. Review them before using the profile anywhere else."}
           </p>
         </div>
@@ -605,6 +615,8 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
             value={
               accessFailure
                 ? "Personal Server refused access"
+                : isEmptyImport
+                  ? "ChatGPT memories (empty)"
                 : "ChatGPT memories"
             }
           />
@@ -627,7 +639,7 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
             </p>
             <p className="mt-2">{accessFailure.message}</p>
           </div>
-        ) : memoriesExport ? (
+        ) : hasMemories ? (
           memoriesExport.memories.map((memory) => (
             <article
               className="border-2 border-border bg-muted p-4"
@@ -640,6 +652,13 @@ function ProfileDraft({ state }: { state: ApprovedGrantState }) {
               </p>
             </article>
           ))
+        ) : isEmptyImport ? (
+          <div className="border-2 border-border bg-muted p-4 text-body text-foreground-dim">
+            <p className="font-semibold text-foreground">Import complete</p>
+            <p className="mt-2">
+              No saved ChatGPT memories were returned for this grant.
+            </p>
+          </div>
         ) : (
           <div className="border-2 border-border bg-muted p-4 text-body text-foreground-dim">
             No ChatGPT memories were imported.

@@ -118,7 +118,27 @@ async function main() {
     else pass(`4 memories returned`);
   }
 
-  step("Builder fetch-data without fixture_ref + example.com PS URL -> 400 not allowed");
+  step("Seed empty");
+  const emptyRef = await seed("empty");
+  pass(`got fixtureRef (len=${emptyRef.length})`);
+
+  step("Builder fetch-data empty fixture_ref -> 0 memories");
+  {
+    const r = await postJson("/demo/login-with-vana/actions/fetch-data", {
+      grant_id: "smoke-grant",
+      personal_server: { serverUrl: "https://example.com" },
+      scope: SCOPE,
+      fixture_ref: emptyRef,
+    });
+    if (r.status !== 200) fail(`expected 200, got ${r.status}: ${JSON.stringify(r.body)}`);
+    else pass(`status 200`);
+    const memories = r.body?.data?.data?.data?.memories;
+    if (!Array.isArray(memories)) fail(`expected memories array, got ${JSON.stringify(r.body).slice(0, 200)}`);
+    else if (memories.length !== 0) fail(`expected 0 memories, got ${memories.length}`);
+    else pass(`0 memories returned`);
+  }
+
+  step("Builder fetch-data with arbitrary non-fixture PS URL -> 400 not allowed");
   {
     const r = await postJson("/demo/login-with-vana/actions/fetch-data", {
       grant_id: "smoke-grant",
