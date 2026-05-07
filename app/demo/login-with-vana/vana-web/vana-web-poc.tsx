@@ -122,6 +122,12 @@ export function VanaWebPoc() {
 
       <section className="rounded-md border border-neutral-200 p-4">
         <h2 className="mb-3 font-medium">Seed ChatGPT demo data</h2>
+        <p className="mb-3 max-w-xl text-neutral-600">
+          Use this as a stand-in for "the user already has ChatGPT data in
+          their Personal Server." It does not scrape ChatGPT or upload anything;
+          it creates a temporary fixture ref so the Builder App can exercise the
+          approval and data-read flow instantly.
+        </p>
         <div className="flex flex-col gap-3">
           <label className="flex items-center gap-2">
             <span className="text-neutral-600">Scenario</span>
