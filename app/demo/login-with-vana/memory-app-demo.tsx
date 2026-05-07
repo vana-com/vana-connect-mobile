@@ -6,6 +6,7 @@ import type {
   DemoJson,
   DemoSession,
 } from "../../dev/login-with-vana/types";
+import { normalizeActionExchangeResult } from "../../../lib/dpv2-poc/action-exchange";
 
 const DEMO_BASE_PATH = "/demo/login-with-vana";
 const DEMO_DATA_HANDLE_KEY = "dpv2_demo_data_handle";
@@ -300,29 +301,22 @@ export function MemoryAppLoginDemo() {
     result: Record<string, DemoJson>,
     exchangedAt: string,
   ) {
-    const payload = (result?.result_payload ?? null) as
-      | (Record<string, DemoJson> & {
-          grant_id?: string;
-          personal_server?: { serverUrl?: string; server_url?: string };
-        })
-      | null;
-    const grantId =
-      typeof payload?.grant_id === "string" ? payload.grant_id : null;
     const demoDataHandle = readDemoDataHandle();
-    const personalServer =
-      demoDataHandle
-        ? { serverUrl: window.location.origin }
-        : (payload?.personal_server ?? null);
-    if (!grantId || !personalServer) {
+    const normalized = normalizeActionExchangeResult(result, {
+      demoPsUrl: demoDataHandle ? window.location.origin : undefined,
+    });
+    if (!normalized.ok) {
       setGrantState({
         status: "approved",
         exchangedAt,
         result,
         memories: undefined,
-        memoriesError: "Real grant did not include personal_server metadata.",
+        memoriesError: normalized.error,
       });
       return;
     }
+    const { grantId, psUrl } = normalized.value;
+    const personalServer = { serverUrl: psUrl };
 
     let response: Response;
     try {
