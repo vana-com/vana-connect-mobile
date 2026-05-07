@@ -25,6 +25,7 @@ type FetchDataBody = {
   grant_id?: unknown;
   personal_server?: unknown;
   scope?: unknown;
+  demo_data_handle?: unknown;
 };
 
 function asString(v: unknown): string | null {
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
   const ps = asObject(body.personal_server);
   const scope = asString(body.scope);
   const serverUrl = ps ? asString(ps.serverUrl) ?? asString(ps.server_url) : null;
+  const demoDataHandle = asString(body.demo_data_handle);
 
   if (!grantId || !serverUrl || !scope) {
     return NextResponse.json(
@@ -101,7 +103,12 @@ export async function POST(request: NextRequest) {
   try {
     psRes = await fetch(`${psOrigin}${uri}`, {
       method: "GET",
-      headers: { Authorization: header },
+      headers: {
+        Authorization: header,
+        ...(demoDataHandle
+          ? { "x-dpv2-demo-data-handle": demoDataHandle }
+          : {}),
+      },
       cache: "no-store",
     });
   } catch (err) {
