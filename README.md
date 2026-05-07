@@ -170,7 +170,7 @@ DPv2 POC human test:
 5. In Memory App, request/import ChatGPT data and approve the account-hosted action.
 6. Confirm Memory App renders four ChatGPT memory entries from the fake PS route, not the sample fallback.
 
-The fake PS supports `happy_path`, `empty`, `invalid_ref`, and `revoked` scenarios from the Vana Web page. The failure scenarios should surface typed fake-PS failures such as `invalid_fixture_ref` or `grant_revoked`.
+The Vana Web page exposes product-relevant test outcomes for `happy_path`, `empty`, and `revoked`. The smoke harness also checks malformed fixture refs directly so invalid-ref plumbing stays covered without exposing that implementation detail in the UI.
 
 The mobile app:
 

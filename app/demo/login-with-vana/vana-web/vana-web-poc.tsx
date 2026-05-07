@@ -38,15 +38,6 @@ const SCENARIO_OPTIONS: Array<{
       "The fake Personal Server is reachable, but it will return an empty ChatGPT memories list.",
   },
   {
-    value: "invalid_ref",
-    label: "Broken fixture reference",
-    description:
-      "Use this to check error handling when the Builder App asks the Personal Server with an invalid temporary fixture reference.",
-    psStatus: "Fixture error armed",
-    psDescription:
-      "The fake Personal Server will reject the read with invalid_fixture_ref, simulating a broken temporary POC reference.",
-  },
-  {
     value: "revoked",
     label: "Grant revoked",
     description:

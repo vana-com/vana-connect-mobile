@@ -26,7 +26,7 @@ Availability model: the fake PS is always available whenever this Next app deplo
 Fake (POC-only — temporary fixture scaffolding):
 
 - **Fake PS seed route** (`POST /demo/login-with-vana/ps-seed/[scope]`). Doesn't ingest anything. Returns a `fixtureRef` plus a debug `fixturePayload`. Stand-in for a Vana Web → PS Lite ingest call.
-- **Fake PS read route** (`GET /v1/data/[scope]`). Same-origin Next route in this repo impersonating a Personal Server. Reads the `fixtureRef`, branches on `scenario` to simulate `happy_path` / `empty` / `invalid_ref` / `revoked`, and returns a hardcoded fixture envelope from `lib/dpv2-poc/fixtures.ts`. No on-chain grant check, no real auth.
+- **Fake PS read route** (`GET /v1/data/[scope]`). Same-origin Next route in this repo impersonating a Personal Server. Reads the `fixtureRef`, branches on `scenario` to simulate `happy_path` / `empty` / `revoked`, and returns a hardcoded fixture envelope from `lib/dpv2-poc/fixtures.ts`. No on-chain grant check, no real auth.
 - **Fixture data.** `getChatGptFixtureEnvelope` returns hard-coded ChatGPT-shaped memories from `lib/dpv2-poc/fixtures.ts`. There is no scraper, no Vana Storage, no decryption.
 - **`fixtureRef`.** Opaque string identifying which fixture scenario the fake PS should serve. Carries `scope`, `ownerSub`, `scenario`, and a nonce. It is not signed, not a capability, not a proof, and not a storage pointer.
 - **Payment.** Not implemented. The `paymentReceipt` field exists on contract types but is never sent or required.
@@ -43,7 +43,7 @@ Seed (fake PS ingest, temporary):
 ```
 POST /demo/login-with-vana/ps-seed/{scope}
 cookie: <demo session>
-body: { "scenario": "happy_path" | "empty" | "invalid_ref" | "revoked" }
+body: { "scenario": "happy_path" | "empty" | "revoked" }
 
 200 → Dpv2PsIngressResponse {
   ok: true,
@@ -104,7 +104,7 @@ When the real DPv2 backend is online, replace each piece in place. Contracts in 
 
 ## Human test
 
-`http://localhost:3084/demo/login-with-vana/vana-web` — full POC walkthrough. Steps in `README.md` under "Local Login with Vana Fixture". Scenarios `happy_path`, `empty`, `invalid_ref`, `revoked` are selectable from the Vana Web page and produce the corresponding typed errors on read.
+`http://localhost:3084/demo/login-with-vana/vana-web` — full POC walkthrough. Steps in `README.md` under "Local Login with Vana Fixture". The Vana Web page exposes product-relevant test outcomes for `happy_path`, `empty`, and `revoked`; `revoked` produces the corresponding typed error on read.
 
 ## Local smoke command
 
@@ -115,4 +115,4 @@ npm run dev
 BASE_URL=http://localhost:3084 npm run smoke:dpv2
 ```
 
-The smoke script creates a fake demo session cookie, seeds `happy_path`, calls the Builder fetch route with `fixture_ref`, verifies four fixture memories, verifies arbitrary non-fixture PS origins are blocked, and checks the `revoked` / `invalid_ref` fake PS error paths.
+The smoke script creates a fake demo session cookie, seeds `happy_path`, calls the Builder fetch route with `fixture_ref`, verifies four fixture memories, verifies arbitrary non-fixture PS origins are blocked, and checks the `revoked` fake PS error path plus malformed `fixture_ref` handling.

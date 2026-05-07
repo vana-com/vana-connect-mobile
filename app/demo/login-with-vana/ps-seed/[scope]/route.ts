@@ -13,7 +13,6 @@ import {
 const VALID_SCENARIOS: Dpv2PocScenario[] = [
   "happy_path",
   "empty",
-  "invalid_ref",
   "revoked",
 ];
 

@@ -143,10 +143,9 @@ async function main() {
     else pass(`error grant_revoked`);
   }
 
-  step("Direct PS read with invalid_ref fixture_ref -> invalid_fixture_ref");
+  step("Direct PS read with malformed fixture_ref -> invalid_fixture_ref");
   {
-    const ref = await seed("invalid_ref");
-    const r = await getPs(ref);
+    const r = await getPs("not-a-fixture-ref");
     if (r.status !== 401) fail(`expected 401, got ${r.status}: ${JSON.stringify(r.body)}`);
     else pass(`status 401`);
     if (r.body?.error !== "invalid_fixture_ref") fail(`expected error invalid_fixture_ref, got: ${r.body?.error}`);

@@ -7,7 +7,6 @@ export type Dpv2PocScope = "chatgpt.memories" | "chatgpt.conversations";
 export type Dpv2PocScenario =
   | "happy_path"
   | "empty"
-  | "invalid_ref"
   | "revoked";
 
 export type Dpv2PocTypedError =

@@ -60,14 +60,6 @@ export async function GET(
 
   const payload = decoded.payload;
 
-  if (payload.scenario === "invalid_ref") {
-    return fail(
-      "invalid_fixture_ref",
-      "Fixture ref marked invalid by scenario",
-      401,
-    );
-  }
-
   if (payload.scenario === "revoked") {
     return fail("grant_revoked", "Grant was revoked by the user", 403);
   }
