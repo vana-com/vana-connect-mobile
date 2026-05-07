@@ -8,6 +8,23 @@ import type {
 } from "../../dev/login-with-vana/types";
 
 const DEMO_BASE_PATH = "/demo/login-with-vana";
+const DEMO_DATA_HANDLE_KEY = "dpv2_demo_data_handle";
+
+function readDemoDataHandle(): string | null {
+  try {
+    return window.localStorage.getItem(DEMO_DATA_HANDLE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeDemoDataHandle(handle: string) {
+  try {
+    window.localStorage.setItem(DEMO_DATA_HANDLE_KEY, handle);
+  } catch {
+    // ignore
+  }
+}
 
 type ChatGptMemory = {
   id: string;
@@ -104,6 +121,7 @@ export function MemoryAppLoginDemo() {
     useState<SessionResponse | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [grantState, setGrantState] = useState<GrantState>({ status: "idle" });
+  const [demoDataHandle, setDemoDataHandle] = useState<string | null>(null);
   const exchangeAttempted = useRef(false);
   const postLoginImportAttempted = useRef(false);
 
@@ -118,6 +136,13 @@ export function MemoryAppLoginDemo() {
       const actionCode = params.get("action_code");
       const returnedState = params.get("state");
       const actionError = params.get("action_error");
+      const incomingHandle = params.get("demo_data_handle");
+
+      if (incomingHandle) {
+        writeDemoDataHandle(incomingHandle);
+        stripDemoHandleParam();
+      }
+      setDemoDataHandle(readDemoDataHandle());
 
       if (error) setStatusMessage(`Sign-in error: ${error}`);
       if (login === "success") setStatusMessage("You're signed in.");
@@ -283,7 +308,10 @@ export function MemoryAppLoginDemo() {
       | null;
     const grantId =
       typeof payload?.grant_id === "string" ? payload.grant_id : null;
-    const personalServer = payload?.personal_server ?? null;
+    const demoDataHandle = readDemoDataHandle();
+    const personalServer =
+      payload?.personal_server ??
+      (demoDataHandle ? { serverUrl: window.location.origin } : null);
     if (!grantId || !personalServer) {
       setGrantState({
         status: "approved",
@@ -304,6 +332,7 @@ export function MemoryAppLoginDemo() {
           grant_id: grantId,
           personal_server: personalServer,
           scope: "chatgpt.memories",
+          ...(demoDataHandle ? { demo_data_handle: demoDataHandle } : {}),
         }),
         cache: "no-store",
       });
@@ -421,6 +450,12 @@ export function MemoryAppLoginDemo() {
           </div>
         </header>
 
+        {demoDataHandle && (
+          <p className="border-2 border-dashed border-border bg-muted px-4 py-2 text-fine font-mono text-muted-foreground">
+            demo_data_handle: {demoDataHandle}
+          </p>
+        )}
+
         {statusMessage && (
           <p className="border-2 border-border bg-highlighter px-4 py-3 text-small font-semibold">
             {statusMessage}
@@ -487,6 +522,12 @@ function stripGrantParams() {
   for (const key of ["action_code", "state", "action_error"]) {
     url.searchParams.delete(key);
   }
+  window.history.replaceState({}, "", url.toString());
+}
+
+function stripDemoHandleParam() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("demo_data_handle");
   window.history.replaceState({}, "", url.toString());
 }
 
