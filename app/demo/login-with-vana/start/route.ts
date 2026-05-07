@@ -14,6 +14,7 @@ export const runtime = "nodejs";
 
 const POST_LOGIN_INTENT_COOKIE = "memory_demo_post_login_intent";
 const POST_LOGIN_INTENT_IMPORT = "import_chatgpt";
+const POST_LOGIN_RETURN_TO_COOKIE = "memory_demo_post_login_return_to";
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,6 +43,18 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.redirect(authorizationUrl);
     if (request.nextUrl.searchParams.get("intent") === "import") {
       response.cookies.set(POST_LOGIN_INTENT_COOKIE, POST_LOGIN_INTENT_IMPORT, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        path: PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE.basePath,
+        maxAge: 10 * 60,
+      });
+    }
+    const returnTo = normalizeReturnTo(
+      request.nextUrl.searchParams.get("return_to"),
+    );
+    if (returnTo) {
+      response.cookies.set(POST_LOGIN_RETURN_TO_COOKIE, returnTo, {
         httpOnly: true,
         sameSite: "lax",
         secure: false,
@@ -78,5 +91,20 @@ export async function GET(request: NextRequest) {
         PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
       ),
     );
+  }
+}
+
+function normalizeReturnTo(value: string | null) {
+  if (!value || value.includes("\\") || value.startsWith("//")) return null;
+  if (!value.startsWith(PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE.basePath)) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value, "http://local.test");
+    if (url.origin !== "http://local.test") return null;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return null;
   }
 }

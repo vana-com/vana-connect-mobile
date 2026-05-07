@@ -16,6 +16,7 @@ export const runtime = "nodejs";
 
 const POST_LOGIN_INTENT_COOKIE = "memory_demo_post_login_intent";
 const POST_LOGIN_INTENT_IMPORT = "import_chatgpt";
+const POST_LOGIN_RETURN_TO_COOKIE = "memory_demo_post_login_return_to";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -69,19 +70,28 @@ export async function GET(request: NextRequest) {
     const shouldImportAfterLogin =
       request.cookies.get(POST_LOGIN_INTENT_COOKIE)?.value ===
       POST_LOGIN_INTENT_IMPORT;
+    const returnTo = request.cookies.get(POST_LOGIN_RETURN_TO_COOKIE)?.value;
+    const redirectUrl = returnTo
+      ? redirectToPath(request, returnTo, { login: "success" })
+      : redirectToFixture(
+          request,
+          {
+            login: "success",
+            ...(shouldImportAfterLogin ? { intent: "import" } : {}),
+          },
+          PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
+        );
 
-    const response = NextResponse.redirect(
-      redirectToFixture(
-        request,
-        {
-          login: "success",
-          ...(shouldImportAfterLogin ? { intent: "import" } : {}),
-        },
-        PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
-      ),
-    );
+    const response = NextResponse.redirect(redirectUrl);
     clearOidcDemoCookies(response, PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE);
     response.cookies.set(POST_LOGIN_INTENT_COOKIE, "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+      path: PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE.basePath,
+      maxAge: 0,
+    });
+    response.cookies.set(POST_LOGIN_RETURN_TO_COOKIE, "", {
       httpOnly: true,
       sameSite: "lax",
       secure: false,
@@ -95,16 +105,19 @@ export async function GET(request: NextRequest) {
     );
     return response;
   } catch (caught) {
-    const response = NextResponse.redirect(
-      redirectToFixture(
-        request,
-        {
-          error:
-            caught instanceof Error ? caught.message : "OIDC callback failed",
-        },
-        PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
-      ),
-    );
+    const returnTo = request.cookies.get(POST_LOGIN_RETURN_TO_COOKIE)?.value;
+    const error =
+      caught instanceof Error ? caught.message : "OIDC callback failed";
+    const redirectUrl = returnTo
+      ? redirectToPath(request, returnTo, { error })
+      : redirectToFixture(
+          request,
+          {
+            error,
+          },
+          PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE,
+        );
+    const response = NextResponse.redirect(redirectUrl);
     clearOidcDemoCookies(response, PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE);
     response.cookies.set(POST_LOGIN_INTENT_COOKIE, "", {
       httpOnly: true,
@@ -113,6 +126,25 @@ export async function GET(request: NextRequest) {
       path: PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE.basePath,
       maxAge: 0,
     });
+    response.cookies.set(POST_LOGIN_RETURN_TO_COOKIE, "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+      path: PUBLIC_LOGIN_WITH_VANA_OIDC_SURFACE.basePath,
+      maxAge: 0,
+    });
     return response;
   }
+}
+
+function redirectToPath(
+  request: NextRequest,
+  path: string,
+  params: Record<string, string>,
+) {
+  const url = new URL(path, request.url);
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, value);
+  }
+  return url;
 }

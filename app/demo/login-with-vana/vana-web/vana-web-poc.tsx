@@ -96,13 +96,10 @@ export function VanaWebPoc() {
             <p>Not signed in.</p>
             <a
               className="inline-block w-fit rounded bg-black px-3 py-1.5 text-white"
-              href="/demo/login-with-vana/start"
+              href="/demo/login-with-vana/start?return_to=/demo/login-with-vana/vana-web"
             >
               Sign in with Vana
             </a>
-            <p className="text-xs text-neutral-500">
-              If sign-in redirects elsewhere, return to this page to continue.
-            </p>
           </div>
         )}
       </section>
