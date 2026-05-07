@@ -124,6 +124,8 @@ Visit `/dev` in the running app for:
 
 The product demo at `/demo/login-with-vana` shows a clean Memory App flow: sign in with Vana, review ChatGPT access in the account app, and return to Memory App after approval.
 
+The DPv2 POC starts one step earlier at `/demo/login-with-vana/vana-web`: Vana Web seeds instant ChatGPT fixture data into the fake Personal Server boundary, then hands the signed fixture handle to the Memory App flow. This lets testers exercise the user-facing path without waiting for ChatGPT scraping, real PS Lite, Vana Storage, or Data Portability RPC integration.
+
 The headed fixture at `/dev/login-with-vana` is the internal version with protocol details. Both routes act as a Memory App relying party against the Hydra POC in `~/code/vana-connect`. They prove the public PKCE client flow without putting a `client_secret` in the browser. The action panel drives a real account-service action: it creates the action through a same-origin route, redirects to the account-hosted review page, and exchanges the returned `action_code`. Only the final result payload is mock.
 
 ```bash
@@ -140,12 +142,28 @@ cd ~/code/vana-connect/spikes/hydra-v26-poc
 #   VANA_DEMO_OIDC_REDIRECT_URI=http://localhost:3084/dev/login-with-vana/callback
 #   VANA_DEMO_PUBLIC_OIDC_REDIRECT_URI=http://localhost:3084/demo/login-with-vana/callback
 #   VANA_DEMO_OIDC_CLIENT_ID=memory-app-dev
+#   MEMORY_APP_GRANTEE_PRIVATE_KEY=0x...
+#   MEMORY_APP_ALLOWED_PS_ORIGINS=http://localhost:3084
+#   DPV2_POC_HANDLE_SECRET=dev-secret
 
 cd ~/code/vana-connect-mobile
 npm run dev
 ```
 
-Then open `http://localhost:3084/demo/login-with-vana` for the product demo, or `http://localhost:3084/dev/login-with-vana` for the internal fixture. The mobile app:
+Then open `http://localhost:3084/demo/login-with-vana/vana-web` for the DPv2 POC, `http://localhost:3084/demo/login-with-vana` for the product Memory App demo, or `http://localhost:3084/dev/login-with-vana` for the internal fixture.
+
+DPv2 POC human test:
+
+1. Sign in from the Vana Web POC page if needed. The page returns to Vana Web after OAuth.
+2. Click **Use ChatGPT demo data**.
+3. Confirm the page shows `Seeded`, `chatgpt.memories`, an owner subject, a handle expiry, and a PS URL.
+4. Click **Open Builder App**.
+5. In Memory App, request/import ChatGPT data and approve the account-hosted action.
+6. Confirm Memory App renders four ChatGPT memory entries from the fake PS boundary, not the sample fallback.
+
+The seeded fixture supports `happy_path`, `empty`, `expired`, and `revoked` scenarios from the Vana Web page. The failure scenarios should surface typed fake-PS failures such as `invalid_demo_data_handle` or `grant_revoked`.
+
+The mobile app:
 
 1. POSTs to `/<surface>/login-with-vana/actions/create`, which forwards to `${VANA_DEMO_ACCOUNT_SERVICE_URL}/api/account/actions` and stores an opaque `state` in an HTTP-only cookie.
 2. Redirects the browser to the `action_url` returned by the account service.

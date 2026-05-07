@@ -75,7 +75,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const psOrigin = new URL(serverUrl).origin;
+  let psOrigin: string;
+  try {
+    psOrigin = new URL(serverUrl).origin;
+  } catch {
+    return NextResponse.json(
+      { error: "personal_server.serverUrl is not a valid URL" },
+      { status: 400 },
+    );
+  }
+
+  if (!isAllowedPersonalServerOrigin(psOrigin, request.nextUrl.origin)) {
+    return NextResponse.json(
+      { error: "personal_server.serverUrl is not allowed for this demo" },
+      { status: 400 },
+    );
+  }
+
   const uri = `/v1/data/${encodeURIComponent(scope)}`;
 
   let header: string;
@@ -145,4 +161,30 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ ok: true, data: parsed });
+}
+
+function isAllowedPersonalServerOrigin(
+  psOrigin: string,
+  requestOrigin: string,
+) {
+  if (psOrigin === requestOrigin) return true;
+
+  const configured = (process.env.MEMORY_APP_ALLOWED_PS_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  if (configured.includes(psOrigin)) return true;
+
+  let hostname: string;
+  try {
+    hostname = new URL(psOrigin).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".myvana.app")
+  );
 }
